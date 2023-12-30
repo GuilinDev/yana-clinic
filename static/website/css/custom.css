@@ -1,0 +1,11 @@
+input[type="text"][name="your-date"]:not(:focus):not(:valid) {
+    color: grey;
+}
+input[type="text"][name="your-date"]:not(:focus):valid {
+    color: black;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+

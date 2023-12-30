@@ -1,0 +1,953 @@
+{% load static %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Dento - Dentist &amp; Medical HTML Template">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Title -->
+    <title>Bless and Joy Wellness</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="{% static 'website/img/core-img/favicon.ico' %}">
+
+    <!-- Core Stylesheet -->
+    <link rel="stylesheet" href="{% static 'website/css/style.css' %}">
+    <!-- custom css -->
+    <link rel="stylesheet" href="{% static 'website/css/custom.css' %}">
+
+</head>
+
+<body>
+<!-- Preloader -->
+<div id="preloader">
+    <div class="preload-content">
+        <div id="dento-load"></div>
+    </div>
+</div>
+
+<!-- ***** Header Area Start ***** -->
+<header class="header-area">
+    <!-- Top Header Area -->
+    <div class="top-header-area">
+        <div class="container h-100">
+            <div class="row h-100 align-items-center">
+                <!-- Top Content -->
+                <div class="col-6 col-md-9 col-lg-8">
+                    <div class="top-header-content">
+                        <a href="#" data-toggle="tooltip" data-placement="bottom"
+                           title="420 Main Street, Wilmington, MA 01887"><i class="fa fa-map-marker"></i> <span>420 Main Street, Wilmington, MA 01887</span></a>
+                        <a href="#" data-toggle="tooltip" data-placement="bottom" title="(978) 729-5878"><i
+                                class="fa fa-phone"></i> <span>(978) 729-5878</span></a>
+                        <a href="#" data-toggle="tooltip" data-placement="bottom" title="yanachoy323@gmail.com"><i
+                                class="fa fa-envelope"></i> <span>yanachoy323@gmail.com</span></a>
+                    </div>
+                </div>
+                <!-- Top Header Social Info -->
+                <div class="col-6 col-md-3 col-lg-4">
+                    <div class="top-header-social-info text-right">
+                        <a href="#" data-toggle="tooltip" data-placement="bottom" title="Facebook"><i
+                                class="fa fa-facebook"></i></a>
+                        <a href="#" data-toggle="tooltip" data-placement="bottom" title="Twitter"><i
+                                class="fa fa-twitter"></i></a>
+                        <a href="#" data-toggle="tooltip" data-placement="bottom" title="Google Plus"><i
+                                class="fa fa-google-plus"></i></a>
+                        <a href="#" data-toggle="tooltip" data-placement="bottom" title="Linkedin"><i
+                                class="fa fa-linkedin"></i></a>
+                        <a href="#" data-toggle="tooltip" data-placement="bottom" title="Pinterest"><i
+                                class="fa fa-pinterest"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Top Header End -->
+
+    <!-- Main Header Start -->
+    <div class="main-header-area">
+        <div class="classy-nav-container breakpoint-off">
+            <div class="container">
+                <!-- Classy Menu -->
+                <nav class="classy-navbar justify-content-between" id="dentoNav">
+
+                    <!-- Logo -->
+                    <a class="nav-brand" href="{% url 'home' %}"><img src="{% static 'website/img/core-img/logo.png' %}"
+                                                                      alt=""></a>
+
+                    <!-- Navbar Toggler -->
+                    <div class="classy-navbar-toggler">
+                        <span class="navbarToggler"><span></span><span></span><span></span></span>
+                    </div>
+
+                    <!-- Menu -->
+                    <div class="classy-menu">
+
+                        <!-- Close Button -->
+                        <div class="classycloseIcon">
+                            <div class="cross-wrap"><span class="top"></span><span class="bottom"></span></div>
+                        </div>
+
+                        <!-- Nav Start -->
+                        <div class="classynav">
+                            <ul id="nav">
+                                <li><a href="{% url 'home' %}">Home</a></li>
+                                <li><a href="#about">About</a></li>
+                                <li><a href="#insurance">Insurance</a></li>
+                                <li><a href="#services">Service</a></li>
+                                <li><a href="#pricing">Pricing</a></li>
+                                <li><a href="#">Blog</a>
+                                    <ul class="dropdown">
+                                        <li><a href="blog.html">- Blog</a></li>
+                                        <li><a href="blog-details.html">- Blog Details</a></li>
+                                    </ul>
+                                </li>
+                                <li><a href="#contact">Contact</a></li>
+                            </ul>
+                        </div>
+                        <!-- Nav End -->
+                    </div>
+
+                    <!-- Booking Now Button -->
+                    <a href="#" class="btn dento-btn booking-btn">Make Appointment</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+<!-- ***** Header Area End ***** -->
+
+<!-- ***** Welcome Area Start ***** -->
+<section class="welcome-area">
+    <!-- Welcome Slides -->
+    <div class="welcome-slides owl-carousel">
+        <!-- Single Welcome Slide -->
+        <div class="welcome-welcome-slide bg-img bg-gradient-overlay jarallax"
+             style="background-image: url({% static 'website/img/bg-img/1.jpg' %});">
+            <div class="container h-100">
+                <div class="row h-100 align-items-center">
+                    <div class="col-12">
+                        <!-- Welcome Text -->
+                        <div class="welcome-text text-center">
+                            <h2 data-animation="fadeInUp" data-delay="100ms">Harmonizing Health Naturally, One Point at
+                                a Time</h2>
+                            <p data-animation="fadeInUp" data-delay="300ms">At the heart of holistic healing, our clinic
+                                is dedicated to providing personalized and effective Chinese medicine treatments,
+                                including acupuncture and herbal remedies.
+                                We invite you to explore the path to wellness with us, where ancient wisdom meets modern
+                                science for your optimal health</p>
+                            <div class="welcome-btn-group">
+                                <a href="#" class="btn dento-btn mx-2" data-animation="fadeInUp" data-delay="500ms">Get
+                                    Started</a>
+                                <a href="#" class="btn dento-btn mx-2 active" data-animation="fadeInUp"
+                                   data-delay="700ms">Contact Us</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Single Welcome Slide -->
+        <div class="welcome-welcome-slide bg-img bg-gradient-overlay jarallax"
+             style="background-image: url({% static 'website/img/bg-img/2.jpg' %});">
+            <div class="container h-100">
+                <div class="row h-100 align-items-center">
+                    <div class="col-12">
+                        <!-- Welcome Text -->
+                        <div class="welcome-text text-center">
+                            <h2 data-animation="fadeInDown" data-delay="100ms">Restoring Balance, Enhancing
+                                Vitality</h2>
+                            <p data-animation="fadeInDown" data-delay="300ms">Discover a blend of tradition and
+                                innovation at our clinic, where each acupuncture point and herbal remedy is a step
+                                toward renewed health.
+                                Join us on a journey where personalized care leads to natural harmony and vibrant
+                                well-being.</p>
+                            <div class="welcome-btn-group">
+                                <a href="#" class="btn dento-btn mx-2" data-animation="fadeInDown" data-delay="500ms">Get
+                                    Started</a>
+                                <a href="#" class="btn dento-btn mx-2 active" data-animation="fadeInDown"
+                                   data-delay="700ms">Contact Us</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- ***** Welcome Area End ***** -->
+
+<!-- ****** About Us Area Start ******* -->
+<section id="about" class="dento-about-us-area section-padding-100-0">
+    <div class="container">
+        <div class="row align-items-center">
+            <!-- About Us Thumbnail -->
+            <div class="col-12 col-md-6">
+                <div class="about-us-thumbnail mb-50">
+                    <img src="{% static 'website/img/bg-img/15.jpg' %}" alt="">
+                </div>
+            </div>
+            <!-- About Content -->
+            <div class="col-12 col-md-6">
+                <div class="about-us-content mb-50">
+                    <!-- Section Heading -->
+                    <div class="section-heading">
+                        <h2>About Us</h2>
+                        <div class="line"></div>
+                    </div>
+                    <p>Our clinic is a sanctuary for healing, combining time-honored acupuncture techniques with modern,
+                        scientifically concentrated Chinese herbal medicine. We specialize in enhancing your body’s
+                        natural balance and well-being, offering personalized treatments for a wide spectrum of health
+                        concerns. Embrace a holistic approach to health with us, where ancient wisdom meets contemporary
+                        science for your optimal wellness</p>
+
+                    <!-- Single Skills Area -->
+                    <div class="single-skills-area mt-30">
+                        <h6>Experience Doctor</h6>
+                        <div id="bar1" class="barfiller">
+                            <span class="tip"></span>
+                            <span class="fill" data-percentage="80"></span>
+                        </div>
+                    </div>
+
+                    <!-- Single Skills Area -->
+                    <div class="single-skills-area mt-30">
+                        <h6>Modern Equipment</h6>
+                        <div id="bar2" class="barfiller">
+                            <span class="tip"></span>
+                            <span class="fill" data-percentage="65"></span>
+                        </div>
+                    </div>
+
+                    <!-- Single Skills Area -->
+                    <div class="single-skills-area mt-30">
+                        <h6>Friendly Staff</h6>
+                        <div id="bar3" class="barfiller">
+                            <span class="tip"></span>
+                            <span class="fill" data-percentage="85"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- ****** About Us Area End ****** -->
+
+<div class="container">
+    <div class="dento-border clearfix"></div>
+</div>
+
+<!-- Cool Facts Area Start -->
+<section class="dento-cta-area">
+    <div class="container">
+        <div class="row">
+            <!-- Cool Facts Area -->
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="single-cta text-center mt-50 mb-100">
+                    <i class="icon_genius"></i>
+                    <h2><span class="counter">20</span></h2>
+                    <h5>Years Of Experience</h5>
+                </div>
+            </div>
+
+            <!-- Cool Facts Area -->
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="single-cta text-center mt-50 mb-100">
+                    <i class="icon_heart_alt"></i>
+                    <h2><span class="counter">700</span>+</h2>
+                    <h5>Happy Patients</h5>
+                </div>
+            </div>
+
+            <!-- Cool Facts Area -->
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="single-cta text-center mt-50 mb-100">
+                    <i class="icon_book_alt"></i>
+                    <h2><span class="counter">120</span></h2>
+                    <h5>Certificate</h5>
+                </div>
+            </div>
+
+            <!-- Cool Facts Area -->
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="single-cta text-center mt-50 mb-100">
+                    <i class="icon_id"></i>
+                    <h2><span class="counter">40</span>+</h2>
+                    <h5>Dentist</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Cool Facts Area End -->
+
+<!-- Dento Service Area Start -->
+<section id="services" class="dento-service-area section-padding-100-0 bg-img bg-gradient-overlay jarallax clearfix"
+         style="background-image: url('{% static 'website/img/bg-img/13.jpg' %}');">
+    <div class="container">
+        <div class="row align-items-center">
+            <!-- Service Content -->
+            <div class="col-12 col-lg-6">
+                <div class="service-content mb-30">
+                    <!-- Section Heading -->
+                    <div class="section-heading white">
+                        <h2>Our Services</h2>
+                        <div class="line"></div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Single Service -->
+                        <div class="col-6 col-md-4">
+                            <div class="single-service mb-70">
+                                <img src="{% static 'website/img/core-img/s1.png' %}" alt="">
+                                <h6>Acupuncture Treatment</h6>
+                            </div>
+                        </div>
+
+                        <!-- Single Service -->
+                        <div class="col-6 col-md-4">
+                            <div class="single-service mb-70">
+                                <img src="{% static 'website/img/core-img/s2.png' %}" alt="">
+                                <h6>Chelation Super Energy Resonance Spa</h6>
+                            </div>
+                        </div>
+
+                        <!-- Single Service -->
+                        <div class="col-6 col-md-4">
+                            <div class="single-service mb-70">
+                                {#                                <img src="{% static 'website/img/core-img/s3.png' %}" alt="">#}
+                                {#                                <h6>Teeth Whitening</h6>#}
+                            </div>
+                        </div>
+
+                        <!-- Single Service -->
+                        <div class="col-6 col-md-4">
+                            <div class="single-service mb-70">
+                                {#                                <img src="{% static 'website/img/core-img/s4.png' %}" alt="">#}
+                                {#                                <h6>Cosmetic Dentistry</h6>#}
+                            </div>
+                        </div>
+
+                        <!-- Single Service -->
+                        <div class="col-6 col-md-4">
+                            <div class="single-service mb-70">
+                                {#                                <img src="{% static 'website/img/core-img/s5.png' %}" alt="">#}
+                                {#                                <h6>Examination</h6>#}
+                            </div>
+                        </div>
+
+                        <!-- Single Service -->
+                        <div class="col-6 col-md-4">
+                            <div class="single-service mb-70">
+                                {#                                <img src="{% static 'website/img/core-img/s1.png' %}" alt="">#}
+                                {#                                <h6>Teeth Pain</h6>#}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Video Area -->
+            <div class="col-12 col-lg-6">
+                <div class="dento-video-area mb-100">
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/WAmNMMsfPYg?si=QZEYnplIQPTREJHr"
+                            title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write;
+                    encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Dento Service Area End -->
+
+<!-- Pricing Table Area Start -->
+<section class="dento-pricing-table-area section-padding-100" id="pricing">
+    <div class="container">
+        <div class="row">
+            <!-- Section Heading -->
+            <div class="col-12">
+                <div class="section-heading text-center">
+                    <h2>Pricing</h2>
+                    <div class="line"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="dento-price-table table-responsive">
+                    <table class="table table-borderless mb-0">
+                        <thead>
+                        <tr>
+                            <th scope="col">Service Names</th>
+                            <th scope="col">Stage</th>
+                            <th scope="col">Price</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <th scope="row">Acupuncture Treatment</th>
+                            <td>Initial session (75 mins)</td>
+                            <td>$150.00</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Acupuncture Treatment</th>
+                            <td>Established session (60 mins)</td>
+                            <td>$120.00</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Acupuncture Save Packages I</th>
+                            <td>7 Treatments</td>
+                            <td>$700.00</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Acupuncture Save Packages II</th>
+                            <td>12 Treatments</td>
+                            <td>$1080.00</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Prescription Chinese Medicine</th>
+                            <td>7 days treatments</td>
+                            <td>$80.00</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Chelation Super Energy Resonance Spa</th>
+                            <td>Full Session (60 mins)</td>
+                            <td>$45.00</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="more-btn text-center mt-50">
+                    <a href="#" class="btn dento-btn">Read More <i class="fa fa-angle-double-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Dento Pricing Table Area End -->
+
+<!-- Book An Oppointment Area Start -->
+<section class="book-an-oppointment-area section-padding-100 bg-img bg-gradient-overlay jarallax clearfix"
+         style="background-image: url('{% static 'website/img/bg-img/12.jpg' %}');">
+    <div class="container">
+        <div class="row">
+            <!-- Section Heading -->
+            <div class="col-12">
+                <div class="section-heading text-center white">
+                    <h2>Book An Apointment</h2>
+                    <div class="line"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <!-- Appointment Form -->
+                <div class="appointment-form">
+                    <form action="#" method="post">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-30">
+                                    <input type="text" name="your-name" class="form-control" placeholder="Your Name"
+                                           required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-30">
+                                    <input type="text" name="your-phone" class="form-control" placeholder="Your Phone"
+                                           required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-30">
+                                    <input type="email" name="your-email" class="form-control" placeholder="Your Email"
+                                           required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-30">
+                                    <input type="text" name="your-address" class="form-control"
+                                           placeholder="Your Address">
+                                </div>
+                            </div>
+
+                            <!-- Date Selector -->
+                            <div class="col-md-6">
+                                <div class="form-group mb-30">
+                                    <input type="text" id="your-date" name="your-date" class="form-control"
+                                           placeholder="Select Date" required
+                                           onfocus="(this.type='date')" onblur="if (!this.value) this.type='text'">
+                                </div>
+                            </div>
+
+                            <!-- Time Selector -->
+                            <div class="col-md-6">
+                                <div class="form-group mb-30">
+                                    <select id="your-time" name="your-time" class="form-control" required>
+                                        <option value="" disabled selected>Select Time</option>
+                                        <!-- Additional options will be loaded by JavaScript -->
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <div class="col-12">
+                                <div class="form-group mb-30">
+                                    <textarea name="your-message" class="form-control"
+                                              placeholder="Your Message"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-12 text-center">
+                                <button type="submit" class="btn dento-btn">Booking Now</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Book An Oppointment Area End -->
+
+<!-- ***** Dento Dentist Area Start ***** -->
+<section class="dentist-area section-padding-100-0">
+    <div class="container">
+        <div class="row">
+            <!-- Section Heading -->
+            <div class="col-12">
+                <div class="section-heading text-center">
+                    <h2>Our Doctor</h2>
+                    <div class="line"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Single Dentist Area -->
+            <div class="col-12 col-sm-6 col-md-4">
+                <div class="single-dentist-area mb-100">
+                    <img src="{% static 'website/img/bg-img/9.png' %}" alt="">
+                    <!-- Dentist Content -->
+                    <div class="dentist-content">
+                        <!-- Social Info -->
+                        <div class="dentist-social-info">
+                            <a href="#"><i class="fa fa-facebook"></i></a>
+                            <a href="#"><i class="fa fa-twitter"></i></a>
+                            <a href="#"><i class="fa fa-google-plus"></i></a>
+                        </div>
+                        <!-- Dentist Info -->
+                        <div class="dentist-info bg-gradient-overlay">
+                            <h5>Michael Barley</h5>
+                            <p>Implant Expert</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Single Dentist Area -->
+            <div class="col-12 col-sm-6 col-md-4">
+                <div class="single-dentist-area mb-100">
+                    <img src="{% static 'website/img/bg-img/10.png' %}" alt="">
+                    <!-- Dentist Content -->
+                    <div class="dentist-content">
+                        <!-- Social Info -->
+                        <div class="dentist-social-info">
+                            <a href="#"><i class="fa fa-facebook"></i></a>
+                            <a href="#"><i class="fa fa-twitter"></i></a>
+                            <a href="#"><i class="fa fa-google-plus"></i></a>
+                        </div>
+                        <!-- Dentist Info -->
+                        <div class="dentist-info bg-gradient-overlay">
+                            <h5>Dr. Choy</h5>
+                            <p>MD in MIT</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Single Dentist Area -->
+            <div class="col-12 col-sm-6 col-md-4">
+                <div class="single-dentist-area mb-100">
+                    <img src="{% static 'website/img/bg-img/11.png' %}" alt="">
+                    <!-- Dentist Content -->
+                    <div class="dentist-content">
+                        <!-- Social Info -->
+                        <div class="dentist-social-info">
+                            <a href="#"><i class="fa fa-facebook"></i></a>
+                            <a href="#"><i class="fa fa-twitter"></i></a>
+                            <a href="#"><i class="fa fa-google-plus"></i></a>
+                        </div>
+                        <!-- Dentist Info -->
+                        <div class="dentist-info bg-gradient-overlay">
+                            <h5>Michael Barley</h5>
+                            <p>Implant Expert</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- ***** Dento Dentist Area End ***** -->
+
+<!-- ***** Testimonials Area Start ***** -->
+<section class="testimonials-area section-padding-100 bg-img bg-gradient-overlay jarallax clearfix"
+         style="background-image: url('{% static 'website/img/bg-img/7.jpg' %}');">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <!-- Testimonials Slides -->
+                <div class="testimonials-slides owl-carousel">
+                    <!-- Single Testimonials Slide -->
+                    <div class="single-testimonial-slide d-flex align-items-center">
+                        <!-- Thumbnail -->
+                        <div class="testimonial-thumb">
+                            <img src="{% static 'website/img/bg-img/8.jpg' %}" alt="">
+                        </div>
+                        <!-- Content -->
+                        <div class="testimonial-content">
+                            <h5>“I am 74 years old and had been suffering joint pain since my early fifties. Both knees
+                                were bone
+                                on bone. Walking was excruciating and I was taking high doses of Ibuprofen and Tylenol
+                                just to
+                                do my daily activities. My PCP saw surgery as the only remedy. The acupuncture
+                                treatments I
+                                received from Dr. Choy alleviated my pain and allowed me to avoid surgery. I can
+                                comfortably
+                                walk between 5000 and 12000 steps daily now. I returned more recently to Dr. Choy for
+                                help
+                                with symptoms and effects of Multiple Sclerosis, thyroid disease, an arthritic hip and
+                                weight
+                                loss. Both acupuncture and herbal remedies have been restoring me to more optimum
+                                health. I
+                                am now largely pain free, I am able to shed the pounds that would not move. Today I live
+                                without MS impacting my life. In fact, my most recent MRI showed no active lesions or
+                                any new
+                                lesions in my brain and spine. As a patient of Dr. Choy I have felt he has drawn on long
+                                experience and profound insight in the human body to personalize the treatment he
+                                provides. I
+                                have felt sincere concern for my well being in his care. I regularly recommend Dr.
+                                Choy’s
+                                services to my friends and family.”</h5>
+                            <h6>Elizabeth Dole</h6>
+                            <p>Patient</p>
+                        </div>
+                    </div>
+
+                    <!-- Single Testimonials Slide -->
+                    <div class="single-testimonial-slide d-flex align-items-center">
+                        <!-- Thumbnail -->
+                        <div class="testimonial-thumb">
+                            <img src="{% static 'website/img/bg-img/8.jpg' %}" alt="">
+                        </div>
+                        <!-- Content -->
+                        <div class="testimonial-content">
+                            <h5>“I'd been avoiding the dentist for years due to bad experiences. A reminder SMS is sent
+                                the working day beforehand. I also had a call confirming appointment. I have been a
+                                patient ever since. My dentist is very reassuring and
+                                very helpful. Excellent treatment and advice.”</h5>
+                            <h6>Arron Ramsey</h6>
+                            <p>Patient</p>
+                        </div>
+                    </div>
+
+                    <!-- Single Testimonials Slide -->
+                    <div class="single-testimonial-slide d-flex align-items-center">
+                        <!-- Thumbnail -->
+                        <div class="testimonial-thumb">
+                            <img src="{% static 'website/img/bg-img/8.jpg' %}" alt="">
+                        </div>
+                        <!-- Content -->
+                        <div class="testimonial-content">
+                            <h5>“I'd been avoiding the dentist for years due to bad experiences. A reminder SMS is sent
+                                the working day beforehand. I also had a call confirming appointment. I have been a
+                                patient ever since. My dentist is very reassuring and
+                                very helpful. Excellent treatment and advice.”</h5>
+                            <h6>Arron Ramsey</h6>
+                            <p>Patient</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- ***** Testimonials Area End ***** -->
+
+<!-- ***** Blog Area Start ***** -->
+<section class="dento-blog-area section-padding-100-0 clearfix">
+    <div class="container">
+        <div class="row">
+            <!-- Section Heading -->
+            <div class="col-12">
+                <div class="section-heading text-center">
+                    <h2>Knowledge</h2>
+                    <div class="line"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Single Blog Item -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="single-blog-item mb-100">
+                    <a href="./blog-details.html">
+                        <img src="{% static 'website/img/bg-img/4.jpg' %}" alt="">
+                    </a>
+                    <!-- Blog Content -->
+                    <div class="blog-content">
+                        <a href="./blog-details.html" class="post-title">How your mouth bacteria can harm your lungs</a>
+                        <p>Donec tempor, lorem et euismod eleifend, est lectus laoreet ante, sed accusan justo diam
+                            ...</p>
+                        <div class="post-meta">
+                            <a href="#"><i class="icon_clock_alt"></i> 26 Dec 2023</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Single Blog Item -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="single-blog-item mb-100">
+                    <a href="./blog-details.html">
+                        <img src="{% static 'website/img/bg-img/5.jpg' %}" alt="">
+                    </a>
+                    <!-- Blog Content -->
+                    <div class="blog-content">
+                        <a href="./blog-details.html" class="post-title">What is the best kind of toothpaste to use?</a>
+                        <p>Donec tempor, lorem et euismod eleifend, est lectus laoreet ante, sed accusan justo diam
+                            ...</p>
+                        <div class="post-meta">
+                            <a href="#"><i class="icon_clock_alt"></i> 26 Dec 2023</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Single Blog Item -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="single-blog-item mb-100">
+                    <a href="./blog-details.html">
+                        <img src="{% static 'website/img/bg-img/6.jpg' %}" alt="">
+                    </a>
+                    <!-- Blog Content -->
+                    <div class="blog-content">
+                        <a href="./blog-details.html" class="post-title">Why you should avoid sipping your drinks</a>
+                        <p>Donec tempor, lorem et euismod eleifend, est lectus laoreet ante, sed accusan justo diam
+                            ...</p>
+                        <div class="post-meta">
+                            <a href="#"><i class="icon_clock_alt"></i> 26 Dec 2023</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- ***** Blog Area End ***** -->
+
+<!-- ***** Contact Area Start ***** -->
+<section class="dento-contact-area mt-50 mb-100" id="contact">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="col-12">
+                    <div class="section-heading text-center">
+                        <h2>Contact</h2>
+                        <div class="line"></div>
+                    </div>
+                </div>
+                <div class="google-maps mb-100">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2939.3915823605184!2d-71.17627452339023!3d42.54697742327129!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89e30a940fc5a647%3A0x9feee5181eeef0c8!2s420%20Main%20St%2C%20Wilmington%2C%20MA%2001887!5e0!3m2!1sen!2sus!4v1703698537333!5m2!1sen!2sus"
+                            allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Contact Information -->
+            <div class="col-12 col-md-4">
+                <div class="contact-information">
+                    <h5>Address</h5>
+                    <p>420 Main Street, Wilmington, MA 01887</p>
+
+                    <h5>Phone</h5>
+                    <p>(978) 729-5878</p>
+
+                    <h5>Email</h5>
+                    <p class="mb-0">yanachoy323@gmail.com</p>
+                </div>
+            </div>
+
+            <!-- Contact Form -->
+            <div class="col-12 col-md-8">
+                <div class="contact-form">
+                    <!-- Section Heading -->
+                    <div class="section-heading">
+                        <h2>Get In Touch</h2>
+                        <div class="line"></div>
+                    </div>
+                    <!-- Form -->
+                    <form action="{% url 'home' %}" method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <input type="text" name="message-name" class="form-control mb-30"
+                                       placeholder="Your Name">
+                            </div>
+                            <div class="col-lg-6">
+                                <input type="email" name="message-email" class="form-control mb-30"
+                                       placeholder="Your Email">
+                            </div>
+                            <div class="col-12">
+                                <textarea name="message" class="form-control mb-30"
+                                          placeholder="Your Message"></textarea>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn dento-btn">Send Message</button>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- ***** Contact Area End ***** -->
+
+<!-- ***** Footer Area Start ***** -->
+<footer class="footer-area bg-img bg-gradient-overlay"
+        style="background-image: url({% static 'website/img/bg-img/3.jpg' %});">
+    <div class="container">
+        <div class="row">
+            <!-- Single Footer Widget -->
+            <div class="col-12 col-sm-6 col-lg-4">
+                <div class="single-footer-widget">
+                    <a href="./home.html" class="d-block mb-4"><img src="{% static 'website/img/core-img/logo.png' %}"
+                                                                    alt=""></a>
+                    <p>Bless and Joy Wellness</p>
+                    <div class="footer-contact">
+                        <p><i class="icon_pin"></i> 420 Main Street, Wilmington, MA 01887</p>
+                        <p><i class="icon_phone"></i> (978) 729-5878 </p>
+                        <p><i class="icon_mail"></i> yanachoy323@gmail.com</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Single Footer Widget -->
+            <div class="col-12 col-sm-6 col-lg">
+                <div class="single-footer-widget">
+                    <!-- Widget Title -->
+                    <h5 class="widget-title">Opening Hours</h5>
+
+                    <!-- Opening Hours -->
+                    <ul class="opening-hours">
+                        <li><span>Mon, Thu, Sat</span> <span>9.00-17.30</span></li>
+                        <li><span>Other Days</span> <span>Closed</span></li>
+                        <li><span>Holiday</span> <span>Closed</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Single Footer Widget -->
+            <div class="col-12 col-sm-6 col-lg">
+                <div class="single-footer-widget">
+                    <!-- Widget Title -->
+                    <h5 class="widget-title">Quick Link</h5>
+
+                    <!-- Quick Links Nav -->
+                    <nav>
+                        <ul class="quick-links">
+                            <li><a href="#">About</a></li>
+                            <li><a href="#">FAQs</a></li>
+                            <li><a href="#">Contact</a></li>
+                            <li><a href="#">Policy</a></li>
+                            <li><a href="#">News</a></li>
+                            <li><a href="#">Advisors</a></li>
+                            <li><a href="#">Careers</a></li>
+                            <li><a href="#">Dentist</a></li>
+                            <li><a href="#services">Services</a></li>
+                            <li><a href="#">Legals</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Single Footer Widget -->
+            <div class="col-12 col-sm-6 col-lg">
+                <div class="single-footer-widget">
+                    <!-- Widget Title -->
+                    <h5 class="widget-title">Newsletter</h5>
+
+                    <p>We will send out weekly newest article and some great offers</p>
+                    <!-- Newsletter Form -->
+                    <div class="footer-newsletter-form">
+                        <form action="#" method="post">
+                            <input type="email" name="nl-email" value="" placeholder="Email Address">
+                            <button type="submit"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+                        </form>
+                    </div>
+
+                    <!-- Social Info -->
+                    <div class="footer-social-info">
+                        <a href="#" data-toggle="tooltip" data-placement="top" title="Facebook"><i
+                                class="fa fa-facebook"></i></a>
+                        <a href="#" data-toggle="tooltip" data-placement="top" title="Twitter"><i
+                                class="fa fa-twitter"></i></a>
+                        <a href="#" data-toggle="tooltip" data-placement="top" title="Google Plus"><i
+                                class="fa fa-google-plus"></i></a>
+                        <a href="#" data-toggle="tooltip" data-placement="top" title="Linkedin"><i
+                                class="fa fa-linkedin"></i></a>
+                        <a href="#" data-toggle="tooltip" data-placement="top" title="Pinterest"><i
+                                class="fa fa-pinterest"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Copywrite Area -->
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="copywrite-content">
+                    <p>
+                        Copyright &copy;<script>document.write(new Date().getFullYear());</script>
+                        All rights reserved
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- ***** Footer Area End ***** -->
+
+<!-- ******* All JS ******* -->
+<!-- jQuery js -->
+<script src="{% static 'website/js/jquery.min.js' %}"></script>
+<!-- Popper js -->
+<script src="{% static 'website/js/popper.min.js' %}"></script>
+<!-- Bootstrap js -->
+<script src="{% static 'website/js/bootstrap.min.js' %}"></script>
+<!-- All js -->
+<script src="{% static 'website/js/dento.bundle.js' %}"></script>
+<!-- Active js -->
+<script src="{% static 'website/js/default-assets/active.js' %}"></script>
+<!-- Custom js -->
+<script src="{% static 'website/js/custom.js' %}"></script>
+
+
+</body>
+
+</html>
