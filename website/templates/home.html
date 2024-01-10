@@ -16,6 +16,8 @@
     <!-- Favicon -->
     <link rel="icon" href="{% static 'website/img/core-img/favicon.ico' %}">
 
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
     <!-- Core Stylesheet -->
     <link rel="stylesheet" href="{% static 'website/css/style.css' %}">
     <!-- custom css -->
@@ -44,8 +46,8 @@
                            title="420 Main Street, Wilmington, MA 01887"><i class="fa fa-map-marker"></i> <span>420 Main Street, Wilmington, MA 01887</span></a>
                         <a href="#" data-toggle="tooltip" data-placement="bottom" title="(978) 729-5878"><i
                                 class="fa fa-phone"></i> <span>(978) 729-5878</span></a>
-                        <a href="#" data-toggle="tooltip" data-placement="bottom" title="yanachoy323@gmail.com"><i
-                                class="fa fa-envelope"></i> <span>yanachoy323@gmail.com</span></a>
+                        <a href="#" data-toggle="tooltip" data-placement="bottom" title="blessandjoywellness@gmail.com"><i
+                                class="fa fa-envelope"></i> <span>blessandjoywellness@gmail.com</span></a>
                     </div>
                 </div>
                 <!-- Top Header Social Info -->
@@ -100,11 +102,11 @@
                                 <li><a href="#insurance">Insurance</a></li>
                                 <li><a href="#services">Service</a></li>
                                 <li><a href="#pricing">Pricing</a></li>
-                                <li><a href="#">Blog</a>
-                                    <ul class="dropdown">
-                                        <li><a href="blog.html">- Blog</a></li>
-                                        <li><a href="blog-details.html">- Blog Details</a></li>
-                                    </ul>
+                                <li><a href="https://www.nutrametrix.com/blessandjoyclinic">External Link</a>
+                                    {#                                    <ul class="dropdown">#}
+                                    {#                                        <li><a href="blog.html">- Blog</a></li>#}
+                                    {#                                        <li><a href="blog-details.html">- Blog Details</a></li>#}
+                                    {#                                    </ul>#}
                                 </li>
                                 <li><a href="#contact">Contact</a></li>
                             </ul>
@@ -113,7 +115,7 @@
                     </div>
 
                     <!-- Booking Now Button -->
-                    <a href="#" class="btn dento-btn booking-btn">Make Appointment</a>
+                    <a href="#" class="btn dento-btn booking-btn">Contact</a>
                 </nav>
             </div>
         </div>
@@ -425,12 +427,6 @@
                     </table>
                 </div>
             </div>
-
-            <div class="col-12">
-                <div class="more-btn text-center mt-50">
-                    <a href="#" class="btn dento-btn">Read More <i class="fa fa-angle-double-right"></i></a>
-                </div>
-            </div>
         </div>
     </div>
 </section>
@@ -455,6 +451,7 @@
                 <!-- Appointment Form -->
                 <div class="appointment-form">
                     <form action="#" method="post">
+                        {% csrf_token %}
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group mb-30">
@@ -484,11 +481,17 @@
                             <!-- Date Selector -->
                             <div class="col-md-6">
                                 <div class="form-group mb-30">
-                                    <input type="text" id="your-date" name="your-date" class="form-control"
-                                           placeholder="Select Date" required
-                                           onfocus="(this.type='date')" onblur="if (!this.value) this.type='text'">
+                                    <input type="date" id="your-date" name="your-date" class="form-control"
+                                           placeholder="Select Date" required>
                                 </div>
                             </div>
+                            {#                            <div class="col-md-6">#}
+                            {#                                <div class="form-group mb-30">#}
+                            {#                                    <input type="text" id="your-date" name="your-date" class="form-control"#}
+                            {#                                           placeholder="Select Date" required#}
+                            {#                                           onfocus="(this.type='date')" onblur="if (!this.value) this.type='text'">#}
+                            {#                                </div>#}
+                            {#                            </div>#}
 
                             <!-- Time Selector -->
                             <div class="col-md-6">
@@ -785,7 +788,7 @@
                     <p>(978) 729-5878</p>
 
                     <h5>Email</h5>
-                    <p class="mb-0">yanachoy323@gmail.com</p>
+                    <p class="mb-0">blessandjoywellness@gmail.com</p>
                 </div>
             </div>
 
@@ -840,7 +843,7 @@
                     <div class="footer-contact">
                         <p><i class="icon_pin"></i> 420 Main Street, Wilmington, MA 01887</p>
                         <p><i class="icon_phone"></i> (978) 729-5878 </p>
-                        <p><i class="icon_mail"></i> yanachoy323@gmail.com</p>
+                        <p><i class="icon_mail"></i> blessandjoywellness@gmail.com</p>
                     </div>
                 </div>
             </div>
@@ -936,6 +939,7 @@
 <!-- ******* All JS ******* -->
 <!-- jQuery js -->
 <script src="{% static 'website/js/jquery.min.js' %}"></script>
+
 <!-- Popper js -->
 <script src="{% static 'website/js/popper.min.js' %}"></script>
 <!-- Bootstrap js -->
@@ -947,6 +951,40 @@
 <!-- Custom js -->
 <script src="{% static 'website/js/custom.js' %}"></script>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        console.log("Script loaded");
+        const dateInput = document.getElementById("your-date");
+
+        if (!dateInput) {
+            console.log("Date input not found");
+            return;
+        }
+
+        // Set the min attribute to today's date
+        const today = new Date();
+        const minDate = today.toISOString().split('T')[0]; // Format as yyyy-mm-dd
+        dateInput.setAttribute('min', minDate);
+
+        dateInput.addEventListener("change", function() {
+            console.log("Date changed: ", this.value);
+            const selectedDate = new Date(this.value + 'T00:00:00Z'); // UTC time
+            const dayOfWeek = selectedDate.getUTCDay();
+            console.log("Day of Week: ", dayOfWeek);
+
+            // Array of allowed days: Tuesday (2), Thursday (4), and Saturday (6)
+            const allowedDays = [2, 4, 6];
+
+            if (!allowedDays.includes(dayOfWeek)) {
+                console.log("Invalid day selected");
+                alert("Appointments can only be booked on Tuesday, Thursday, or Saturday.");
+                this.value = ''; // Reset the date input
+            } else {
+                console.log("Valid day selected");
+            }
+        });
+    });
+</script>
 
 </body>
 

@@ -112,6 +112,24 @@ STATICFILES_DIRS = [
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+# Email Settings
+# 1. Set up Email Backend for local testing
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+# 2. Set up Local SMTP Server for local testing
+# python -m smtpd -n -c DebuggingServer localhost:1025 for 3.11 and below
+# python -m aiosmtpd -n -l localhost:1025 for 3.12 and above
+'''
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 1025
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+EMAIL_USE_TLS = False
+'''
+
+# 3. Set up Gmail SMTP Server for production
 '''
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -120,17 +138,18 @@ EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 '''
-# python3 -m smtpd -n -c DebuggingServer localhost:1025 for 3.11 and below
-# python -m aiosmtpd -n -l localhost:1025 for 3.12 and above
-EMAIL_HOST = 'localhost'
-EMAIL_PORT = 1025
-EMAIL_HOST_USER = ''
-EMAIL_HOST_PASSWORD = ''
-EMAIL_USE_TLS = False
 
-django_heroku.settings(locals())
+# Login Settings
+# LOGIN_REDIRECT_URL = '/'
+# LOGOUT_REDIRECT_URL = '/'
+
+# Heorku settings
+# django_heroku.settings(locals())
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
