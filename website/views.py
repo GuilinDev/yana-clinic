@@ -13,7 +13,7 @@ def home(request):
         name = request.POST['your-name']
         phone = request.POST['your-phone']
         email = request.POST['your-email']
-        service = request.POST['service']
+        service = request.POST['your-service']
         date = request.POST['your-date']
         time = request.POST['your-time']
         message = request.POST.get('your-message', '')
