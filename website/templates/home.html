@@ -262,7 +262,7 @@
             <div class="col-12 col-sm-6 col-lg-3">
                 <div class="single-cta text-center mt-50 mb-100">
                     <i class="icon_heart_alt"></i>
-                    <h2><span class="counter">700</span>+</h2>
+                    <h2><span class="counter">100</span>+</h2>
                     <h5>Happy Patients</h5>
                 </div>
             </div>
@@ -272,7 +272,7 @@
                 <div class="single-cta text-center mt-50 mb-100">
                     <i class="icon_book_alt"></i>
                     <h2><span class="counter">120</span></h2>
-                    <h5>Certificate</h5>
+                    <h5>Certificates</h5>
                 </div>
             </div>
 
@@ -281,7 +281,7 @@
                 <div class="single-cta text-center mt-50 mb-100">
                     <i class="icon_id"></i>
                     <h2><span class="counter">40</span>+</h2>
-                    <h5>Dentist</h5>
+                    <h5>Chinese medicine prescriptions</h5>
                 </div>
             </div>
         </div>
@@ -1077,7 +1077,40 @@
             }
         });
 
+        const appointmentForm = document.querySelector('.appointment-form form');
 
+        if (appointmentForm) {
+            appointmentForm.addEventListener('submit', function (event) {
+                event.preventDefault(); // Prevent normal form submission
+
+                // Collect form data
+                var formData = new FormData(appointmentForm);
+
+                // Send AJAX request
+                fetch(appointmentForm.action, {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            // Show the success modal
+                            $('#successModal').modal({
+                                backdrop: 'static', // Prevent closing when clicking outside
+                                keyboard: false,     // Prevent closing with the escape key
+                                show: true          // Display it right away
+                            });
+                        } else {
+                            throw new Error('Form submission failed');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // Handle error (e.g., show error message)
+                    });
+            });
+        } else {
+            console.log('Appointment form not found');
+        }
     });
 </script>
 
