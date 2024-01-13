@@ -31,3 +31,25 @@ html {
     margin-top: 10px;
 }
 
+#insurance ul li {
+    background-color: #eee;
+    list-style: none;
+    margin: 10px auto;
+    padding: 10px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#insurance ol li {
+    list-style-type: decimal;
+    background-color: #fff;
+}
+
+#insurance ul .roman ol li {
+    list-style-type: upper-roman;
+}
+
+#insurance .last li {
+    list-style-type: circle;
+    list-style-position: inside;
+    background-color: #fff;
+}
