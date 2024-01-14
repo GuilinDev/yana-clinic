@@ -53,3 +53,9 @@ html {
     list-style-position: inside;
     background-color: #fff;
 }
+
+.date-input-container {
+    position: relative;
+    display: inline-block;
+}
+
