@@ -4,11 +4,13 @@ $(document).ready(function() {
 
     // Event listener for date change
     $('#your-date').on('change', function() {
-        console.log('Date changed');
+        console.log('your-date Date changed');
         const date = this.value;
+        console.log('date:', date);
         fetch(`/get-available-times/?date=${date}`)
             .then(response => response.json())
             .then(data => {
+                console.log('Success:', data);
                 const timeSelect = document.getElementById('your-time');
                 timeSelect.innerHTML = '<option value="" disabled selected>Select Time</option>';
                 data.available_times.forEach(time => {
@@ -18,7 +20,9 @@ $(document).ready(function() {
                     timeSelect.appendChild(option);
                 });
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => {
+                console.error('Error fetching available times:', error);
+            });
     });
 
     // Function to populate time options

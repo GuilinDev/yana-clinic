@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, time
 
 from django.core.mail import send_mail
 from django.http import JsonResponse
@@ -58,10 +58,8 @@ def home(request):
         return render(request, 'home.html', {})
 
 
-from datetime import datetime, timedelta
-
-
 def get_available_times(request):
+    print("Inside get_available_times")
     date_str = request.GET.get('date')
     if not date_str:
         return JsonResponse({'error': 'Date is required'}, status=400)
@@ -80,7 +78,7 @@ def get_available_times(request):
     # Determine available times
     available_times = []
     for hour, minute in working_hours:
-        appointment_time = datetime.combine(selected_date, datetime.time(hour=hour, minute=minute))
+        appointment_time = datetime.combine(selected_date, time(hour=hour, minute=minute))
         if not booked_appointments.filter(time=appointment_time.time()).exists():
             available_times.append(appointment_time.strftime('%H:%M'))
 
