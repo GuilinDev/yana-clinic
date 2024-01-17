@@ -30,7 +30,6 @@ def home(request):
         )
         appointment.save()
 
-        print("Preparing to send email")
         send_email(
             'blessandjoywellness@gmail.com',  # from email
             email,  # to email
