@@ -1,10 +1,10 @@
 from datetime import datetime, time
 
-from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.shortcuts import render
 
 from .models import Appointment
+from .utils import send_email, send_sms, backup_to_s3
 
 
 def home(request):
@@ -30,29 +30,26 @@ def home(request):
         )
         appointment.save()
 
-        # Send an email for the appointment
-        send_mail(
-            f'Appointment for {name} on {date} at {time}',  # subject
-            f'You have an appointment for {name} on {date} at {time}.',  # message
-            email,  # from email
-            ['blessandjoywellness@gmail.com'],  # to email
-            fail_silently=False,
+        print("Preparing to send email")
+        send_email(
+            'blessandjoywellness@gmail.com',  # from email
+            email,  # to email
+            'Appointment Confirmation',  # subject
+            f'You have an appointment for {name} on {date} at {time}.'
         )
 
-        # for contact form
-        # print(request.POST)
-        # message_name = request.POST['message-name']
-        # message_email = request.POST['message-email']
-        # message = request.POST['message']
-
-        # Send an email
-        # send_mail(
-        #     message_name, # subject
-        #     message, # message
-        #     message_email, # from email
-        #     ['guilindev@gmail.com'], # to email
-        #     fail_silently=False,
+        # send_sms(
+        #     phone,
+        #     f'{name}, You have an appointment at Bless and Joy Wellness on {date} at {time}. '
+        #     f'If you are new patient, please arrive 30 minutes early.'
         # )
+        #
+        # backup_to_s3(
+        #     f'{name}_{date}_{time}.txt',
+        #     'blessandjoywellness',
+        #     f'{name}_{date}_{time}.txt'
+        # )
+
         return render(request, 'home.html', {'message_name': name})
     else:
         return render(request, 'home.html', {})
