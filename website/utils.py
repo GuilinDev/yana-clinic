@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 def send_email(sender, recipient, subject, body):
-    logger.log(1, f'Sending email from {sender} to {recipient} with subject "{subject}"')
+    print(f'Sending email from {sender} to {recipient} with subject "{subject}"')
     client = boto3.client('ses',
                           aws_access_key_id=aws_access_key_id,
                           aws_secret_access_key=aws_secret_access_key,
@@ -29,9 +29,9 @@ def send_email(sender, recipient, subject, body):
                 'Body': {'Text': {'Data': body}}
             }
         )
-        logger.log(1, f'Email sent with message ID: {response["MessageId"]}')
+        print(f'Email sent with message ID: {response["MessageId"]}')
     except ClientError as e:
-        logger.log(1, e.response['Error']['Message'])
+        print(e.response['Error']['Message'])
         return None
     return response
 

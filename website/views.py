@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, time
 
 from django.http import JsonResponse
@@ -5,6 +6,8 @@ from django.shortcuts import render
 
 from .models import Appointment
 from .utils import send_email, send_sms, backup_to_s3
+
+logger = logging.getLogger(__name__)
 
 
 def home(request):
@@ -30,11 +33,13 @@ def home(request):
         )
         appointment.save()
 
+        # Sending email and SMS
+        print(f'New appointment created for {name} on {date} at {time}')
         send_email(
             'blessandjoywellness@gmail.com',  # from email
             email,  # to email
-            'Appointment Confirmation',  # subject
-            f'You have an appointment for {name} on {date} at {time}.'
+            'Bless and Joy Wellness Appointment Confirmation',  # subject
+            f'{name}, you have an appointment on {date} at {time} with Bless and Joy Wellness.'
         )
 
         # send_sms(
@@ -55,7 +60,7 @@ def home(request):
 
 
 def get_available_times(request):
-    print("Inside get_available_times")
+    print("Start get_available_times")
     date_str = request.GET.get('date')
     if not date_str:
         return JsonResponse({'error': 'Date is required'}, status=400)
