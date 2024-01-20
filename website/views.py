@@ -1,4 +1,5 @@
 import logging
+import datetime
 from datetime import datetime, time
 
 from django.http import JsonResponse
@@ -8,6 +9,8 @@ from .models import Appointment
 from .utils import send_email, send_sms, backup_to_s3
 
 logger = logging.getLogger(__name__)
+
+weekday_names = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
 
 def home(request):
@@ -33,13 +36,34 @@ def home(request):
         )
         appointment.save()
 
+        date_obj = datetime.strptime(date, "%Y-%m-%d")
+        weekday_number = date_obj.weekday()
+        weekday_name = weekday_names[weekday_number]
+
         # Sending email and SMS
         print(f'New appointment created for {name} on {date} at {time}')
+        email_body = f"""
+        {name} is scheduled for {service} on {date} {weekday_name}, {time}.
+        
+        Address: 420 Main Street, Wilmington, MA 01887
+        
+        Please bring your own items for personal hygiene.
+        Towels:
+        - Large bath towel X 1
+        - Middle size towel X 2
+        - Small size towel X 2
+
+        You will likely sweat through the clothes you are wearing, please also bring appropriate change of clothes.
+
+        * Caution: Avoid electronics device or metal to be installed inside the body.
+
+        If you are unable to keep your appointment please call (987) 729-5878 within 24 hours.
+        """
         send_email(
             'blessandjoywellness@gmail.com',  # from email
             email,  # to email
             'Bless and Joy Wellness Appointment Confirmation',  # subject
-            f'{name}, you have an appointment on {date} at {time} with Bless and Joy Wellness.'
+            email_body
         )
 
         # send_sms(
