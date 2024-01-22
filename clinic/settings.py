@@ -171,5 +171,6 @@ LOGGING = {
     },
 }
 
-# CSRF_TRUSTED_ORIGINS = ['https://blessandjoywellness.com', 'https://www.blessandjoywellness.com', 'www.blessandjoywellness.com', 'blessandjoywellness.com']
+CSRF_TRUSTED_ORIGINS = ['https://blessandjoywellness.com', 'https://www.blessandjoywellness.com']
+SESSION_COOKIE_DOMAIN = '.blessandjoywellness.com'
 
