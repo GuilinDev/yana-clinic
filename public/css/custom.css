@@ -1,0 +1,61 @@
+input[type="text"][name="your-date"]:not(:focus):not(:valid) {
+    color: grey;
+}
+input[type="text"][name="your-date"]:not(:focus):valid {
+    color: black;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+.modal-title {
+    font-family: 'Arial', sans-serif;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+}
+
+.modal-heading {
+    font-family: 'Verdana', sans-serif;
+    font-size: 18px;
+    color: #555;
+    margin-top: 20px;
+}
+
+.modal-content-text {
+    font-family: 'Georgia', serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #666;
+    margin-top: 10px;
+}
+
+#insurance ul li {
+    background-color: #eee;
+    list-style: none;
+    margin: 10px auto;
+    padding: 10px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#insurance ol li {
+    list-style-type: decimal;
+    background-color: #fff;
+}
+
+#insurance ul .roman ol li {
+    list-style-type: upper-roman;
+}
+
+#insurance .last li {
+    list-style-type: circle;
+    list-style-position: inside;
+    background-color: #fff;
+}
+
+.date-input-container {
+    position: relative;
+    display: inline-block;
+}
+
