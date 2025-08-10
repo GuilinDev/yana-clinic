@@ -1,0 +1,15 @@
+{
+  "name": "yana-clinic-netlify",
+  "version": "1.0.0",
+  "description": "Bless and Joy Wellness Clinic - Netlify + Supabase",
+  "scripts": {
+    "build": "echo 'No build required for static site'",
+    "dev": "netlify dev"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.0.0"
+  }
+}

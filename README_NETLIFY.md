@@ -20,29 +20,42 @@
    - 项目设置 -> API -> URL
    - 项目设置 -> API -> anon public key
 
-### 2. 配置环境变量
+### 2. 安装依赖
 
-1. 复制 `.env.example` 为 `.env`
-2. 填入你的Supabase凭据：
-```
-SUPABASE_URL=你的项目URL
-SUPABASE_ANON_KEY=你的匿名密钥
-```
-
-3. 更新 `public/js/appointment.js` 中的配置：
-```javascript
-const SUPABASE_URL = '你的项目URL';
-const SUPABASE_ANON_KEY = '你的匿名密钥';
+```bash
+npm install
 ```
 
 ### 3. Netlify部署
 
+#### 方法1：通过Netlify网站界面
 1. 在 [Netlify](https://netlify.com) 创建账号
 2. 连接GitHub仓库，选择netlify分支
 3. 部署设置：
-   - Build command: 留空（静态站点无需构建）
+   - Build command: `npm install`
    - Publish directory: `public`
-4. 添加环境变量（如果使用Netlify Functions）
+4. **重要**：在Site settings -> Environment variables添加：
+   - `SUPABASE_URL`: 你的Supabase项目URL
+   - `SUPABASE_ANON_KEY`: 你的Supabase匿名密钥
+
+#### 方法2：通过Netlify CLI
+```bash
+# 安装Netlify CLI
+npm install -g netlify-cli
+
+# 登录Netlify
+netlify login
+
+# 初始化站点
+netlify init
+
+# 设置环境变量
+netlify env:set SUPABASE_URL "你的Supabase项目URL"
+netlify env:set SUPABASE_ANON_KEY "你的Supabase匿名密钥"
+
+# 部署
+netlify deploy --prod
+```
 
 ### 4. 数据迁移（可选）
 
@@ -79,9 +92,33 @@ python manage.py dumpdata website.appointment > appointments.json
 - 创建 `admin.html` 页面
 - 通过Supabase JS客户端管理数据
 
+## 安全架构说明
+
+### 为什么这种方式更安全？
+
+1. **Supabase凭据不暴露在前端**
+   - 所有Supabase调用通过Netlify Functions进行
+   - 凭据只存在Netlify的环境变量中
+   - 前端代码完全看不到任何敏感信息
+
+2. **API代理层的好处**
+   - Netlify Functions作为中间层
+   - 可以添加额外的验证和限流
+   - 方便未来添加更多业务逻辑
+
+3. **关于anon key**
+   - 虽然Supabase的anon key设计为可公开
+   - 但通过Netlify Functions隐藏它提供额外安全层
+   - 避免直接暴露数据库结构
+
 ## 注意事项
 
-1. **安全性**: 
+1. **环境变量配置**: 
+   - **绝对不要**将Supabase凭据提交到Git
+   - 只在Netlify后台配置环境变量
+   - 本地开发使用`.env`文件（已加入.gitignore）
+
+2. **安全性**: 
    - 生产环境中应启用Supabase的RLS（行级安全）
    - 考虑添加reCAPTCHA防止垃圾提交
 
