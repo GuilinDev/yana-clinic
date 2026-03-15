@@ -1,4 +1,4 @@
-name: build
+name: build-and-deploy
 
 on:
   push:
@@ -7,23 +7,49 @@ on:
 
 env:
   DOCKERHUB_USERNAME: guilindev
+  IMAGE_NAME: guilindev/clinic:latest
 
 jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Login to Docker Hub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ env.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build and push
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v5
         with:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ env.DOCKERHUB_USERNAME }}/clinic:latest
+          tags: ${{ env.IMAGE_NAME }}
           no-cache: true
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: docker
+    steps:
+      - name: Deploy to Vultr via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VULTR_HOST }}
+          username: ${{ secrets.VULTR_USERNAME }}
+          key: ${{ secrets.VULTR_SSH_PRIVATE_KEY }}
+          script: |
+            docker pull guilindev/clinic:latest
+            docker stop clinic 2>/dev/null || true
+            docker rm clinic 2>/dev/null || true
+            docker run -d \
+              --name clinic \
+              --restart unless-stopped \
+              -p 8000:8000 \
+              -v /root/clinic-data/db.sqlite3:/usr/src/app/db.sqlite3 \
+              -e DEBUG=False \
+              -e SESSION_COOKIE_DOMAIN=.blessandjoywellness.com \
+              guilindev/clinic:latest \
+              sh -c "python manage.py migrate --noinput && gunicorn --workers=3 --bind=0.0.0.0:8000 clinic.wsgi:application"
+            docker image prune -f

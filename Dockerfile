@@ -15,8 +15,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy project
 COPY . /usr/src/app/
 
+# Run migrations and collect static files
+RUN python manage.py collectstatic --noinput
+
 # Expose the port the app runs on
 EXPOSE 8000
 
 # Start Gunicorn with 3 workers
-CMD ["gunicorn", "--workers=3", "--bind=0.0.0.0:8000", "your_project_name.wsgi:application"]
+CMD ["gunicorn", "--workers=3", "--bind=0.0.0.0:8000", "clinic.wsgi:application"]

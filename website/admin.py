@@ -4,8 +4,8 @@ from .models import Appointment
 
 # Register your models here.
 class AppointmentAdmin(admin.ModelAdmin):
-    list_display = ('name', 'phone', 'email', 'date', 'time', 'service', 'message')
-    list_filter = ('date', 'service')  # Add filters if needed
+    list_display = ('name', 'phone', 'email', 'date', 'time', 'service', 'location', 'message')
+    list_filter = ('date', 'service', 'location')
     search_fields = ('name', 'email')  # Add search functionality
 
 

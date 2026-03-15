@@ -1,91 +1,66 @@
 import logging
-import datetime
 from datetime import datetime, time
 
 from django.http import JsonResponse
 from django.shortcuts import render
 
 from .models import Appointment
-from .utils import send_email, send_sms, backup_to_s3
 
 logger = logging.getLogger(__name__)
 
-weekday_names = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+LOCATIONS = {
+    'wilmington': {
+        'name': 'Wilmington',
+        'address': '420 Main Street, Wilmington, MA 01887',
+        'phone': '(978) 729-5878',
+    },
+    'chinatown': {
+        'name': 'Chinatown (Boston)',
+        'address': '65 Harrison Ave. Suite 201B, Boston, MA 02111',
+        'phone': '(617) 451-7500',
+    },
+}
 
 
 def home(request):
     if request.method == 'POST':
-        # Extracting form data
         name = request.POST['your-name']
         phone = request.POST['your-phone']
         email = request.POST['your-email']
         service = request.POST['your-service']
         date = request.POST['your-date']
-        time = request.POST['your-time']
+        time_str = request.POST['your-time']
+        location = request.POST.get('your-location', 'wilmington')
         message = request.POST.get('your-message', '')
 
-        # Creating a new appointment
         appointment = Appointment(
             name=name,
             phone=phone,
             email=email,
             service=service,
             date=datetime.strptime(date, '%Y-%m-%d').date(),
-            time=datetime.strptime(time, '%H:%M').time(),
-            message=message
+            time=datetime.strptime(time_str, '%H:%M').time(),
+            location=location,
+            message=message,
         )
         appointment.save()
 
-        date_obj = datetime.strptime(date, "%Y-%m-%d")
-        weekday_number = date_obj.weekday()
-        weekday_name = weekday_names[weekday_number]
+        loc_info = LOCATIONS.get(location, LOCATIONS['wilmington'])
+        logger.info(f'New appointment: {name} on {date} at {time_str} @ {loc_info["name"]}')
 
-        # Sending email and SMS
-        print(f'New appointment created for {name} on {date} at {time}')
-        email_body = f"""
-        {name} is scheduled for {service} on {date} {weekday_name}, {time}.
-        
-        Address: 420 Main Street, Wilmington, MA 01887
-        
-        Please bring your own items for personal hygiene.
-        Towels:
-        - Large bath towel X 1
-        - Middle size towel X 2
-        - Small size towel X 2
-
-        You will likely sweat through the clothes you are wearing, please also bring appropriate change of clothes.
-
-        * Caution: Avoid electronics device or metal to be installed inside the body.
-
-        If you are unable to keep your appointment please call (987) 729-5878 within 24 hours.
-        """
-        send_email(
-            'blessandjoywellness@gmail.com',  # from email
-            email,  # to email
-            'Bless and Joy Wellness Appointment Confirmation',  # subject
-            email_body
-        )
-
-        # send_sms(
-        #     phone,
-        #     f'{name}, You have an appointment at Bless and Joy Wellness on {date} at {time}. '
-        #     f'If you are new patient, please arrive 30 minutes early.'
-        # )
-        #
-        # backup_to_s3(
-        #     f'{name}_{date}_{time}.txt',
-        #     'blessandjoywellness',
-        #     f'{name}_{date}_{time}.txt'
-        # )
-
-        return render(request, 'home.html', {'message_name': name})
+        return render(request, 'home.html', {
+            'message_name': name,
+            'message_location': loc_info['name'],
+            'message_address': loc_info['address'],
+        })
     else:
         return render(request, 'home.html', {})
 
 
 def get_available_times(request):
-    print("Start get_available_times")
     date_str = request.GET.get('date')
+    location = request.GET.get('location', 'wilmington')
+
     if not date_str:
         return JsonResponse({'error': 'Date is required'}, status=400)
 
@@ -94,17 +69,16 @@ def get_available_times(request):
     except ValueError:
         return JsonResponse({'error': 'Invalid date format'}, status=400)
 
-    # Define working hours
+    # Working hours: 9:00 - 17:30, every 30 min
     working_hours = [(hour, minute) for hour in range(9, 18) for minute in [0, 30]]
 
-    # Get booked appointments for the selected date
-    booked_appointments = Appointment.objects.filter(date=selected_date)
+    # Filter by date AND location
+    booked_appointments = Appointment.objects.filter(date=selected_date, location=location)
 
-    # Determine available times
     available_times = []
     for hour, minute in working_hours:
-        appointment_time = datetime.combine(selected_date, time(hour=hour, minute=minute))
-        if not booked_appointments.filter(time=appointment_time.time()).exists():
-            available_times.append(appointment_time.strftime('%H:%M'))
+        t = time(hour=hour, minute=minute)
+        if not booked_appointments.filter(time=t).exists():
+            available_times.append(f'{hour:02d}:{minute:02d}')
 
     return JsonResponse({'available_times': available_times})
