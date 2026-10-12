@@ -24,9 +24,12 @@ python manage.py collectstatic
 
 # Production server (used in Procfile)
 gunicorn clinic.wsgi
+
+# Run tests (website/tests.py)
+python manage.py test
 ```
 
-There is no test suite or linter configured in this project.
+There is no linter configured in this project.
 
 ## Architecture
 
@@ -39,7 +42,7 @@ There is no test suite or linter configured in this project.
 
 ### Key Files
 
-- `website/views.py` — Two views: `home` (renders page + handles POST appointment form with location), `get_available_times` (AJAX endpoint returning available 30-min slots from 9:00–17:30, filtered by location)
+- `website/views.py` — Two views: `home` (renders page + handles POST appointment form with location), `get_available_times` (AJAX endpoint returning available 30-min slots from 9:00–17:30, filtered by location). Booking rules (`OPEN_WEEKDAYS`, `BOOKING_CUTOFF`, `booking_error`) live here and are enforced server-side
 - `website/utils.py` — Placeholder for future email service integration
 - `clinic/urls.py` — Admin at `/yana/`, auth views at `/accounts/login/` and `/logout/`
 
@@ -49,6 +52,7 @@ There is no test suite or linter configured in this project.
 - **Chinatown**: 65 Harrison Ave. Suite 201B, Boston, MA 02111 — Open Mon/Wed/Fri
 - Both closed on Sunday and holidays
 - Appointment booking includes location selector; date validation enforces correct days per location
+- No same-day online booking; booking for the next day closes at 6:00 PM (America/New_York) the day before, so the clinic sees every booking in its evening review. Patients are told to text (978) 729-5878 instead
 
 ### Deployment
 

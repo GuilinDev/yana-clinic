@@ -748,6 +748,7 @@
                 <div class="section-heading text-center white">
                     <h2>Make An Appointment</h2>
                     <div class="line"></div>
+                    <p style="color: #ffffff; font-size: 15px; margin: 20px 0 0;">{{ booking_notice }}</p>
                 </div>
             </div>
         </div>
@@ -809,7 +810,8 @@
                                 <div class="form-group mb-30">
                                     <div class="date-input-container">
                                         <input type="date" id="your-date" name="your-date" class="form-control"
-                                               placeholder="Select Date" required style="background-color: #2c455d">
+                                               placeholder="Select Date" min="{{ booking_min_date }}" required
+                                               style="background-color: #2c455d">
                                     </div>
                                 </div>
                             </div>
@@ -1311,9 +1313,10 @@
 
         if (!dateInput || !locationSelect) return;
 
-        // Set min date to today
-        const today = new Date();
-        dateInput.setAttribute('min', today.toISOString().split('T')[0]);
+        // Earliest bookable date comes from the server, in clinic time
+        // (no same-day booking; next-day booking closes the evening before)
+        const minDate = dateInput.min;
+        const bookingClosedMessage = "{{ booking_closed_message|escapejs }}";
 
         // Allowed days per location (JS: 0=Sun, 1=Mon, ..., 6=Sat)
         const allowedDaysByLocation = {
@@ -1334,10 +1337,22 @@
 
         // Validate date based on selected location
         dateInput.addEventListener("change", function () {
+            if (!this.value) {
+                timeSelect.innerHTML = '<option value="" disabled selected>Select Time</option>';
+                return;
+            }
+
             const location = locationSelect.value;
             if (!location) {
                 alert("Please select a location first.");
                 this.value = '';
+                return;
+            }
+
+            if (this.value < minDate) {
+                alert(bookingClosedMessage);
+                this.value = '';
+                timeSelect.innerHTML = '<option value="" disabled selected>Select Time</option>';
                 return;
             }
 
@@ -1397,7 +1412,9 @@
                         appointmentForm.reset();
                         timeSelect.innerHTML = '<option value="" disabled selected>Select Time</option>';
                     } else {
-                        throw new Error('Form submission failed');
+                        return response.json().catch(() => ({})).then(data => {
+                            alert(data.error || 'Failed to book appointment. Please try again or call us directly.');
+                        });
                     }
                 })
                 .catch(error => {

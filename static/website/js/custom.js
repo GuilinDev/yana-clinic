@@ -6,8 +6,9 @@ $(document).ready(function() {
     $('#your-date').on('change', function() {
         console.log('your-date Date changed');
         const date = this.value;
+        const location = $('#your-location').val();
         console.log('date:', date);
-        fetch(`/get-available-times/?date=${date}`)
+        fetch(`/get-available-times/?date=${date}&location=${location}`)
             .then(response => response.json())
             .then(data => {
                 console.log('Success:', data);
