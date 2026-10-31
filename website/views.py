@@ -96,7 +96,8 @@ def home(request):
         appointment.save()
 
         loc_info = LOCATIONS.get(location, LOCATIONS['wilmington'])
-        logger.info(f'New appointment: {name} on {date} at {time_str} @ {loc_info["name"]}')
+        # Keep patient details out of the logs; the id is enough to find the record
+        logger.info('New appointment #%s on %s at %s @ %s', appointment.pk, date, time_str, loc_info['name'])
 
         return render(request, 'home.html', {
             **booking_context(),

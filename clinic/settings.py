@@ -1,15 +1,27 @@
 import os
 from pathlib import Path
-from decouple import config
+from decouple import Csv, config
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-g-ij#v*$jzv-&y#ihkhph8pn+ozis@=^2rmod^v!#b*=*j(_lx')
+# Defaults are the production-safe ones; local development sets DEBUG=True in .env
+# (see .env.example). The deploy script generates SECRET_KEY once on the server.
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-DEBUG = config('DEBUG', default=True, cast=bool)
+SECRET_KEY = config('SECRET_KEY', default='')
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = 'django-insecure-local-development-only'
+    else:
+        raise ImproperlyConfigured('SECRET_KEY must be set when DEBUG is False')
 
-ALLOWED_HOSTS = ['*', 'blessandjoywellness.com', 'www.blessandjoywellness.com', '64.176.216.79']
+ALLOWED_HOSTS = config(
+    'ALLOWED_HOSTS',
+    default='blessandjoywellness.com,www.blessandjoywellness.com,64.176.216.79,localhost,127.0.0.1',
+    cast=Csv(),
+)
 
 # Application definition
 
@@ -79,7 +91,10 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STORAGES = {
+    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
+}
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -103,3 +118,10 @@ LOGGING = {
 
 CSRF_TRUSTED_ORIGINS = ['https://blessandjoywellness.com', 'https://www.blessandjoywellness.com']
 SESSION_COOKIE_DOMAIN = config('SESSION_COOKIE_DOMAIN', default=None)
+
+# TLS is terminated by the reverse proxy in front of the container. Only send
+# cookies over HTTPS outside local development. (HSTS and the HTTPS redirect are
+# left to the proxy until its configuration has been confirmed.)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG

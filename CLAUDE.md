@@ -12,6 +12,10 @@ Yana Clinic (Bless and Joy Wellness) is a Django 5.0 web application for a welln
 # Install dependencies
 pip install -r requirements.txt
 
+# Local settings (DEBUG=True etc.). Defaults are production-safe: without a .env,
+# DEBUG is False and SECRET_KEY is required.
+cp .env.example .env
+
 # Run development server
 python manage.py runserver
 
@@ -27,6 +31,9 @@ gunicorn clinic.wsgi
 
 # Run tests (website/tests.py)
 python manage.py test
+
+# Back up the SQLite database (used by the nightly cron on the server)
+python manage.py backup_db --dest /path/to/backups --keep 14
 ```
 
 There is no linter configured in this project.
@@ -35,10 +42,10 @@ There is no linter configured in this project.
 
 - **Django project**: `clinic/` — settings, root URL config, WSGI/ASGI entry points
 - **Single app**: `website/` — all business logic lives here
-- **Database**: SQLite (`db.sqlite3`), single model `Appointment` (name, phone, email, service, date, time, location, message)
+- **Database**: SQLite (`db.sqlite3`, not committed), single model `Appointment` (name, phone, email, service, date, time, location, message)
 - **Static files**: served via WhiteNoise from `static/website/`
 - **Templates**: `website/templates/` (home.html, login.html)
-- **Config**: Uses `python-decouple` for SECRET_KEY, DEBUG, SESSION_COOKIE_DOMAIN via environment variables
+- **Config**: `python-decouple` reads `.env` / environment variables: `DEBUG` (default False), `SECRET_KEY` (required unless DEBUG), `ALLOWED_HOSTS` (comma-separated, defaults to the production hosts + localhost), `SESSION_COOKIE_DOMAIN`, `LOG_LEVEL`. Cookies are Secure whenever DEBUG is False; TLS is terminated by the reverse proxy on the server.
 
 ### Key Files
 
@@ -56,7 +63,9 @@ There is no linter configured in this project.
 
 ### Deployment
 
-- GitHub Actions (`.github/workflows/build.yaml`) on push to `main`: builds Docker image → pushes to DockerHub (`guilindev/clinic:latest`) → SSHes into Vultr to deploy
-- Runs on Vultr at 64.176.216.79 (Ubuntu 22.04)
-- SQLite database persisted via Docker volume mount at `/root/clinic-data/db.sqlite3`
-- Environment variables configured on server: SECRET_KEY, DEBUG=False, SESSION_COOKIE_DOMAIN
+- GitHub Actions (`.github/workflows/build.yaml`) on push to `main`: `test` job (checks + tests on Python 3.13) → `docker` job builds the image and pushes `guilindev/clinic:latest` and `guilindev/clinic:<commit sha>` → `deploy` job SSHes into Vultr
+- Runs on Vultr at 64.176.216.79 (Ubuntu 22.04), container `clinic` on port 8000 behind a reverse proxy
+- Files on the server: `/root/clinic-data/db.sqlite3` (bind-mounted into the container), `/root/clinic-data/clinic.env` (holds `SECRET_KEY`, generated once by the deploy script, passed with `--env-file`), `/root/clinic-backups/` (`pre-deploy-*.sqlite3` snapshots taken by every deploy, 10 kept; nightly `db-*.sqlite3` from `/etc/cron.d/clinic-backup` via `manage.py backup_db`, 14 kept)
+- The deploy script pulls the image first, snapshots the database, starts the new container, then health-checks `http://127.0.0.1:8000/` for up to 60 s. On failure it restarts the previous image (`guilindev/clinic:previous`) and fails the run.
+- **Rollback**: Actions → build-and-deploy → "Run workflow" → `image_tag` = the commit SHA of a known-good run (no rebuild, same health check). On the server: `docker stop clinic && docker rm clinic`, then start `guilindev/clinic:previous` or any `guilindev/clinic:<sha>` with the `docker run` command from the workflow. To restore data, copy a snapshot from `/root/clinic-backups/` over `/root/clinic-data/db.sqlite3` while the container is stopped.
+- Dependabot (`.github/dependabot.yml`) opens weekly PRs for pip, GitHub Actions and the Docker base image.
