@@ -16,8 +16,6 @@
     <!-- Favicon -->
     <link rel="icon" href="{% static 'website/img/core-img/favicon.ico' %}">
 
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-
     <!-- Core Stylesheet -->
     <link rel="stylesheet" href="{% static 'website/css/style.css' %}">
     <!-- custom css -->
@@ -42,11 +40,11 @@
                 <!-- Top Content -->
                 <div class="col-6 col-md-9 col-lg-8">
                     <div class="top-header-content">
-                        <a href="#direction" data-toggle="tooltip" data-placement="bottom"
-                           title="Wilmington"><i class="fa fa-map-marker"></i> <span>Wilmington: (978) 729-5878</span></a>
-                        <a href="#direction" data-toggle="tooltip" data-placement="bottom"
-                           title="Chinatown Boston"><i class="fa fa-map-marker"></i> <span>Chinatown: (617) 451-7500</span></a>
-                        <a href="#" data-toggle="tooltip" data-placement="bottom" title="blessandjoywellness@gmail.com"><i
+                        <a href="tel:+19787295878" data-toggle="tooltip" data-placement="bottom"
+                           title="Call Wilmington"><i class="fa fa-phone"></i> <span>Wilmington: (978) 729-5878</span></a>
+                        <a href="tel:+16174517500" data-toggle="tooltip" data-placement="bottom"
+                           title="Call Chinatown Boston"><i class="fa fa-phone"></i> <span>Chinatown: (617) 451-7500</span></a>
+                        <a href="mailto:blessandjoywellness@gmail.com" data-toggle="tooltip" data-placement="bottom" title="Email us"><i
                                 class="fa fa-envelope"></i> <span>blessandjoywellness@gmail.com</span></a>
                     </div>
                 </div>
@@ -710,7 +708,7 @@
                     <div style="font-size: 13px; text-transform: uppercase; letter-spacing: 3px; color: #1a6fc4; margin-bottom: 8px; font-weight: 600;">Annual Membership</div>
                     <h3 style="font-size: 48px; color: #333; margin-bottom: 5px; font-weight: 700;"><span style="font-size: 22px; vertical-align: top; color: #1a6fc4;">$</span>588<span style="font-size: 18px; color: #999; font-weight: 400;"> / year</span></h3>
                     <p style="color: #999; font-size: 14px; margin-bottom: 20px;">Only $49 / month</p>
-                    <a href="#appointment" class="btn dento-btn" style="padding: 12px 40px; font-size: 15px;">Text to Join: (978) 729-5878</a>
+                    <a href="sms:+19787295878" class="btn dento-btn" style="padding: 12px 40px; font-size: 15px;">Text to Join: (978) 729-5878</a>
                 </div>
             </div>
             <div class="col-12 col-md-6 col-lg-5 mb-4">
@@ -748,7 +746,7 @@
                 <div class="section-heading text-center white">
                     <h2>Make An Appointment</h2>
                     <div class="line"></div>
-                    <p style="color: #ffffff; font-size: 15px; margin: 20px 0 0;">{{ booking_notice }}</p>
+                    <p class="booking-notice" style="color: #ffffff; font-size: 15px; margin: 20px 0 0;">Please book online by {{ booking_cutoff_label }} the day before your visit. For same-day or last-minute appointments, please <a href="sms:{{ text_phone_link }}">text us at {{ text_phone }}</a>.</p>
                 </div>
             </div>
         </div>
@@ -757,41 +755,50 @@
             <div class="col-12">
                 <!-- Appointment Form -->
                 <div class="appointment-form">
-                    <form action="#" method="post">
+                    <form action="{% url 'home' %}" method="post" id="booking-form">
                         {% csrf_token %}
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group mb-30">
-                                    <input type="text" name="your-name" class="form-control" placeholder="Your Name"
-                                           required style="background-color: #2c455d">
+                                    <label for="your-name">Name</label>
+                                    <input type="text" id="your-name" name="your-name" class="form-control" placeholder="Your Name"
+                                           required maxlength="100" autocomplete="name" style="background-color: #2c455d">
+                                    <div class="field-error" data-error-for="your-name"></div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group mb-30">
-                                    <input type="text" name="your-phone" class="form-control" placeholder="Your Phone"
-                                           required style="background-color: #2c455d">
+                                    <label for="your-phone">Phone</label>
+                                    <input type="tel" id="your-phone" name="your-phone" class="form-control" placeholder="Your Phone"
+                                           required maxlength="20" autocomplete="tel" inputmode="tel" style="background-color: #2c455d">
+                                    <div class="field-error" data-error-for="your-phone"></div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group mb-30">
-                                    <input type="email" name="your-email" class="form-control" placeholder="Your Email"
-                                           required style="background-color: #2c455d">
+                                    <label for="your-email">Email</label>
+                                    <input type="email" id="your-email" name="your-email" class="form-control" placeholder="Your Email"
+                                           required maxlength="254" autocomplete="email" style="background-color: #2c455d">
+                                    <div class="field-error" data-error-for="your-email"></div>
                                 </div>
                             </div>
                             <!-- Location Selector -->
                             <div class="col-md-6">
                                 <div class="form-group mb-30">
+                                    <label for="your-location">Location</label>
                                     <select id="your-location" name="your-location" class="form-control" required
                                             style="background-color: #2c455d">
                                         <option value="" disabled selected>Select Location</option>
                                         <option value="wilmington">Wilmington - 420 Main St, Wilmington, MA (Tue/Thu/Sat)</option>
                                         <option value="chinatown">Chinatown - 65 Harrison Ave, Boston, MA (Mon/Wed/Fri)</option>
                                     </select>
+                                    <div class="field-error" data-error-for="your-location"></div>
                                 </div>
                             </div>
                             <!-- Service Selector -->
                             <div class="col-md-6">
                                 <div class="form-group mb-30">
+                                    <label for="your-service">Service</label>
                                     <select id="your-service" name="your-service" class="form-control" required
                                             style="background-color: #2c455d">
                                         <option value="" disabled selected>Select Service</option>
@@ -802,39 +809,49 @@
                                             Chelation Super Energy Resonance Spa
                                         </option>
                                     </select>
+                                    <div class="field-error" data-error-for="your-service"></div>
                                 </div>
                             </div>
-
                             <!-- Date Selector -->
                             <div class="col-md-6">
                                 <div class="form-group mb-30">
+                                    <label for="your-date">Date</label>
                                     <div class="date-input-container">
                                         <input type="date" id="your-date" name="your-date" class="form-control"
-                                               placeholder="Select Date" min="{{ booking_min_date }}" required
-                                               style="background-color: #2c455d">
+                                               min="{{ booking_min_date }}" required style="background-color: #2c455d">
                                     </div>
+                                    <div class="field-error" data-error-for="your-date"></div>
                                 </div>
                             </div>
-
                             <!-- Time Selector -->
                             <div class="col-md-6">
                                 <div class="form-group mb-30">
+                                    <label for="your-time">Time</label>
                                     <select id="your-time" name="your-time" class="form-control" required
                                             style="background-color: #2c455d">
                                         <option value="" disabled selected>Select Time</option>
                                     </select>
+                                    <div class="field-error" data-error-for="your-time"></div>
                                 </div>
                             </div>
-
-
                             <div class="col-12">
                                 <div class="form-group mb-30">
-                                    <textarea name="your-message" class="form-control"
+                                    <label for="your-message">Message (optional)</label>
+                                    <textarea id="your-message" name="your-message" class="form-control"
                                               placeholder="Your Message" style="background-color: #2c455d"></textarea>
+                                    <div class="field-error" data-error-for="your-message"></div>
                                 </div>
                             </div>
+                            <!-- Left empty by people; bots fill it in and the booking is ignored -->
+                            <div class="hp-field" aria-hidden="true">
+                                <label for="your-website">Website</label>
+                                <input type="text" id="your-website" name="your-website" tabindex="-1" autocomplete="off">
+                            </div>
+                            <div class="col-12">
+                                <div class="form-alert" id="booking-alert" role="alert" hidden></div>
+                            </div>
                             <div class="col-12 text-center">
-                                <button type="submit" class="btn dento-btn">Make Appointment Now</button>
+                                <button type="submit" class="btn dento-btn" id="booking-submit">Make Appointment Now</button>
                             </div>
                         </div>
                     </form>
@@ -849,13 +866,13 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Appointment Confirmation</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Appointment Request Received</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
-                Your Appointment is Booked! Please check your selected location for the appointment address.
+            <div class="modal-body" id="booking-success-body">
+                <p>Thank you, your appointment request has been received. The clinic will contact you to confirm.</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -1106,7 +1123,7 @@
                     <div class="col-12 col-md-6 mb-4">
                         <h5 class="text-center mb-3">Wilmington Clinic</h5>
                         <p class="text-center">420 Main Street, Wilmington, MA 01887<br/>
-                        Phone: (978) 729-5878<br/>
+                        Phone: <a href="tel:+19787295878">(978) 729-5878</a><br/>
                         Hours: Tuesday, Thursday, Saturday 9:00-17:30</p>
                         <div class="google-maps">
                             <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2939.3915823605184!2d-71.17627452339023!3d42.54697742327129!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89e30a940fc5a647%3A0x9feee5181eeef0c8!2s420%20Main%20St%2C%20Wilmington%2C%20MA%2001887!5e0!3m2!1sen!2sus!4v1703698537333!5m2!1sen!2sus"
@@ -1116,7 +1133,7 @@
                     <div class="col-12 col-md-6 mb-4">
                         <h5 class="text-center mb-3">Chinatown Clinic (Boston)</h5>
                         <p class="text-center">65 Harrison Ave. Suite 201B, Boston, MA 02111<br/>
-                        Phone: (617) 451-7500<br/>
+                        Phone: <a href="tel:+16174517500">(617) 451-7500</a><br/>
                         Hours: Monday, Wednesday, Friday 9:00-17:30</p>
                         <div class="google-maps">
                             <iframe src="https://maps.google.com/maps?q=65+Harrison+Ave,+Boston,+MA+02111&t=&z=17&ie=UTF8&iwloc=&output=embed"
@@ -1193,10 +1210,10 @@
                     <p>Bless and Joy Wellness</p>
                     <div class="footer-contact">
                         <p><i class="icon_pin"></i> <strong>Wilmington:</strong> 420 Main Street, Wilmington, MA 01887</p>
-                        <p><i class="icon_phone"></i> (978) 729-5878</p>
+                        <p><i class="icon_phone"></i> <a href="tel:+19787295878">(978) 729-5878</a></p>
                         <p><i class="icon_pin"></i> <strong>Chinatown:</strong> 65 Harrison Ave. Suite 201B, Boston, MA 02111</p>
-                        <p><i class="icon_phone"></i> (617) 451-7500</p>
-                        <p><i class="icon_mail"></i> blessandjoywellness@gmail.com</p>
+                        <p><i class="icon_phone"></i> <a href="tel:+16174517500">(617) 451-7500</a></p>
+                        <p><i class="icon_mail"></i> <a href="mailto:blessandjoywellness@gmail.com">blessandjoywellness@gmail.com</a></p>
                     </div>
                 </div>
             </div>
@@ -1302,126 +1319,215 @@
 <script src="{% static 'website/js/dento.bundle.js' %}"></script>
 <!-- Active js -->
 <script src="{% static 'website/js/default-assets/active.js' %}"></script>
-<!-- Custom js -->
-<script src="{% static 'website/js/custom.js' %}"></script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("booking-form");
+        if (!form) return;
+
         const locationSelect = document.getElementById("your-location");
         const dateInput = document.getElementById("your-date");
         const timeSelect = document.getElementById("your-time");
+        const submitButton = document.getElementById("booking-submit");
+        const alertBox = document.getElementById("booking-alert");
 
-        if (!dateInput || !locationSelect) return;
-
-        // Earliest bookable date comes from the server, in clinic time
-        // (no same-day booking; next-day booking closes the evening before)
+        // The server enforces every booking rule; these copies only give instant feedback
         const minDate = dateInput.min;
         const bookingClosedMessage = "{{ booking_closed_message|escapejs }}";
-
-        // Allowed days per location (JS: 0=Sun, 1=Mon, ..., 6=Sat)
-        const allowedDaysByLocation = {
-            'wilmington': [2, 4, 6],   // Tue, Thu, Sat
-            'chinatown': [1, 3, 5]     // Mon, Wed, Fri
+        const textPhone = "{{ text_phone|escapejs }}";
+        const textPhoneLink = "{{ text_phone_link|escapejs }}";
+        const openDays = {
+            'wilmington': {name: 'Wilmington', days: [2, 4, 6], label: 'Tuesday, Thursday or Saturday'},  // JS: 0=Sun
+            'chinatown': {name: 'Chinatown', days: [1, 3, 5], label: 'Monday, Wednesday or Friday'}
         };
+        const timePlaceholder = '<option value="" disabled selected>Select Time</option>';
 
-        const dayNamesByLocation = {
-            'wilmington': 'Tuesday, Thursday, or Saturday',
-            'chinatown': 'Monday, Wednesday, or Friday'
-        };
+        function fieldError(name, message) {
+            const box = form.querySelector('[data-error-for="' + name + '"]');
+            const field = form.elements[name];
+            if (box) box.textContent = message || '';
+            if (field && field.classList) field.classList.toggle('is-invalid', Boolean(message));
+        }
 
-        // Reset date and time when location changes
-        locationSelect.addEventListener("change", function () {
-            dateInput.value = '';
-            timeSelect.innerHTML = '<option value="" disabled selected>Select Time</option>';
+        function showAlert(message) {
+            alertBox.textContent = message || '';
+            alertBox.hidden = !message;
+        }
+
+        function clearErrors() {
+            form.querySelectorAll('.field-error').forEach(function (el) { el.textContent = ''; });
+            form.querySelectorAll('.is-invalid').forEach(function (el) { el.classList.remove('is-invalid'); });
+            showAlert('');
+        }
+
+        function resetTimes() {
+            timeSelect.innerHTML = timePlaceholder;
+        }
+
+        function displayTime(hhmm) {
+            const parts = hhmm.split(':');
+            let hour = parseInt(parts[0], 10);
+            const suffix = hour >= 12 ? 'PM' : 'AM';
+            hour = hour % 12 || 12;
+            return hour + ':' + parts[1] + ' ' + suffix;
+        }
+
+        // A field's error disappears as soon as the field changes
+        form.addEventListener('input', function (event) {
+            if (event.target.name) fieldError(event.target.name, '');
         });
 
-        // Validate date based on selected location
+        locationSelect.addEventListener("change", function () {
+            dateInput.value = '';
+            resetTimes();
+            fieldError('your-location', '');
+            fieldError('your-date', '');
+            fieldError('your-time', '');
+        });
+
         dateInput.addEventListener("change", function () {
-            if (!this.value) {
-                timeSelect.innerHTML = '<option value="" disabled selected>Select Time</option>';
-                return;
-            }
+            resetTimes();
+            fieldError('your-date', '');
+            fieldError('your-time', '');
+            if (!this.value) return;
 
             const location = locationSelect.value;
             if (!location) {
-                alert("Please select a location first.");
                 this.value = '';
+                fieldError('your-location', 'Please select a location first.');
+                locationSelect.focus();
                 return;
             }
-
             if (this.value < minDate) {
-                alert(bookingClosedMessage);
                 this.value = '';
-                timeSelect.innerHTML = '<option value="" disabled selected>Select Time</option>';
+                fieldError('your-date', bookingClosedMessage);
+                return;
+            }
+            const rule = openDays[location];
+            const dayOfWeek = new Date(this.value + 'T00:00:00Z').getUTCDay();
+            if (rule && !rule.days.includes(dayOfWeek)) {
+                this.value = '';
+                fieldError('your-date', rule.name + ' is open on ' + rule.label + '. Please choose one of those days.');
                 return;
             }
 
-            const selectedDate = new Date(this.value + 'T00:00:00Z');
-            const dayOfWeek = selectedDate.getUTCDay();
-            const allowedDays = allowedDaysByLocation[location] || [];
-
-            if (!allowedDays.includes(dayOfWeek)) {
-                alert("Appointments at " + (location === 'wilmington' ? 'Wilmington' : 'Chinatown') +
-                      " can only be booked on " + dayNamesByLocation[location] + ".");
-                this.value = '';
-                timeSelect.innerHTML = '<option value="" disabled selected>Select Time</option>';
-                return;
-            }
-
-            // Fetch available times with location
-            fetch('/get-available-times/?date=' + this.value + '&location=' + location)
-                .then(response => response.json())
-                .then(data => {
-                    timeSelect.innerHTML = '<option value="" disabled selected>Select Time</option>';
-                    if (data.available_times && data.available_times.length > 0) {
-                        data.available_times.forEach(function (time) {
-                            const option = document.createElement('option');
-                            option.value = time;
-                            option.textContent = time;
-                            timeSelect.appendChild(option);
-                        });
-                    } else {
-                        const option = document.createElement('option');
-                        option.value = '';
-                        option.textContent = 'No available times';
-                        option.disabled = true;
-                        timeSelect.appendChild(option);
+            timeSelect.innerHTML = '<option value="" disabled selected>Loading times...</option>';
+            fetch('/get-available-times/?date=' + encodeURIComponent(this.value) + '&location=' + encodeURIComponent(location),
+                  {headers: {'Accept': 'application/json'}})
+                .then(function (response) { return response.json(); })
+                .then(function (data) {
+                    resetTimes();
+                    const times = data.available_times || [];
+                    if (times.length === 0) {
+                        fieldError('your-time', 'No times are available on this date. Please choose another date.');
+                        return;
                     }
+                    times.forEach(function (time) {
+                        const option = document.createElement('option');
+                        option.value = time;
+                        option.textContent = displayTime(time);
+                        timeSelect.appendChild(option);
+                    });
                 })
-                .catch(error => console.error('Error fetching times:', error));
+                .catch(function () {
+                    resetTimes();
+                    fieldError('your-time', 'Could not load the available times. Please try again.');
+                });
         });
 
-        // Form submission
-        const appointmentForm = document.querySelector('.appointment-form form');
-        if (appointmentForm) {
-            appointmentForm.addEventListener('submit', function (event) {
-                event.preventDefault();
-                var formData = new FormData(appointmentForm);
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            clearErrors();
+            const originalLabel = submitButton.textContent;
+            submitButton.disabled = true;
+            submitButton.textContent = 'Booking...';
 
-                fetch(appointmentForm.action, {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => {
-                    if (response.ok) {
-                        $('#successModal').modal({
-                            backdrop: 'static',
-                            keyboard: false,
-                            show: true
-                        });
-                        appointmentForm.reset();
-                        timeSelect.innerHTML = '<option value="" disabled selected>Select Time</option>';
-                    } else {
-                        return response.json().catch(() => ({})).then(data => {
-                            alert(data.error || 'Failed to book appointment. Please try again or call us directly.');
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Failed to book appointment. Please try again or call us directly.');
+            fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form),
+                headers: {'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest'}
+            })
+            .then(function (response) {
+                return response.json().catch(function () { return {}; }).then(function (data) {
+                    return {status: response.status, data: data};
                 });
+            })
+            .then(function (result) {
+                const data = result.data;
+                if (result.status === 200 && data.ok) {
+                    showSuccess(data.appointment);
+                    form.reset();
+                    resetTimes();
+                    return;
+                }
+                if (data.errors) {
+                    if (result.status === 409) {
+                        // Someone took the slot meanwhile: reload the times for this date first,
+                        // because reloading clears the time field's error
+                        dateInput.dispatchEvent(new Event('change'));
+                    }
+                    Object.keys(data.errors).forEach(function (name) {
+                        if (name !== 'form') fieldError(name, data.errors[name][0]);
+                    });
+                    const firstInvalid = form.querySelector('.is-invalid');
+                    if (firstInvalid) firstInvalid.focus();
+                }
+                showAlert(data.error || ('We could not complete your booking. Please try again or text us at ' + textPhone + '.'));
+            })
+            .catch(function () {
+                showAlert('We could not reach the booking service. Please check your connection and try again, or text us at ' + textPhone + '.');
+            })
+            .then(function () {
+                submitButton.disabled = false;
+                submitButton.textContent = originalLabel;
             });
+        });
+
+        function escapeHtml(text) {
+            return String(text).replace(/[&<>"']/g, function (c) {
+                return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c];
+            });
+        }
+
+        // A one-hour calendar entry the patient can save to their phone
+        function calendarLink(a) {
+            const day = a.date.replace(/-/g, '');
+            const hour = parseInt(a.time.split(':')[0], 10);
+            const minute = a.time.split(':')[1];
+            const start = day + 'T' + a.time.replace(':', '') + '00';
+            const end = day + 'T' + String(hour + 1).padStart(2, '0') + minute + '00';
+            const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+            const ics = [
+                'BEGIN:VCALENDAR',
+                'VERSION:2.0',
+                'PRODID:-//Bless and Joy Wellness//Booking//EN',
+                'BEGIN:VEVENT',
+                'UID:' + stamp + '-' + Math.random().toString(36).slice(2) + '@blessandjoywellness.com',
+                'DTSTAMP:' + stamp,
+                'DTSTART;TZID=America/New_York:' + start,
+                'DTEND;TZID=America/New_York:' + end,
+                'SUMMARY:Bless and Joy Wellness - ' + a.service.replace(/[,;\\]/g, ' '),
+                'LOCATION:' + a.address.replace(/,/g, '\\,'),
+                'DESCRIPTION:Phone ' + a.phone + '. The clinic will contact you to confirm this appointment.',
+                'END:VEVENT',
+                'END:VCALENDAR'
+            ].join('\r\n');
+            return 'data:text/calendar;charset=utf-8,' + encodeURIComponent(ics);
+        }
+
+        function showSuccess(a) {
+            document.getElementById('booking-success-body').innerHTML =
+                '<p>Thank you, your appointment request has been received. The clinic will contact you to confirm.</p>' +
+                '<ul class="booking-summary">' +
+                '<li><span>Date</span> ' + escapeHtml(a.date_display) + '</li>' +
+                '<li><span>Time</span> ' + escapeHtml(a.time_display) + '</li>' +
+                '<li><span>Service</span> ' + escapeHtml(a.service) + '</li>' +
+                '<li><span>Location</span> ' + escapeHtml(a.location_name) + ', ' + escapeHtml(a.address) + '</li>' +
+                '<li><span>Phone</span> <a href="tel:' + escapeHtml(a.phone_link) + '">' + escapeHtml(a.phone) + '</a></li>' +
+                '</ul>' +
+                '<p><a class="btn btn-primary btn-sm" download="appointment.ics" href="' + calendarLink(a) + '">Add to my calendar</a></p>' +
+                '<p class="mb-0">Need to change it? <a href="sms:' + escapeHtml(textPhoneLink) + '">Text us at ' + escapeHtml(textPhone) + '</a>.</p>';
+            $('#successModal').modal({backdrop: 'static', keyboard: false, show: true});
         }
     });
 </script>

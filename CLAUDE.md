@@ -42,14 +42,18 @@ There is no linter configured in this project.
 
 - **Django project**: `clinic/` — settings, root URL config, WSGI/ASGI entry points
 - **Single app**: `website/` — all business logic lives here
-- **Database**: SQLite (`db.sqlite3`, not committed), single model `Appointment` (name, phone, email, service, date, time, location, message)
+- **Database**: SQLite (`db.sqlite3`, not committed), single model `Appointment` (name, phone, email, service, date, time, location, message, status, notes, created_at). SQLite transactions start in `IMMEDIATE` mode so booking inserts are serialised
 - **Static files**: served via WhiteNoise from `static/website/`
-- **Templates**: `website/templates/` (home.html, login.html)
+- **Templates**: `website/templates/` (home.html, login.html). The booking form's script is inline at the bottom of home.html; it shows errors next to fields, fills the success modal from the JSON response and offers an `.ics` calendar link. Phone numbers and the email address are `tel:` / `sms:` / `mailto:` links
 - **Config**: `python-decouple` reads `.env` / environment variables: `DEBUG` (default False), `SECRET_KEY` (required unless DEBUG), `ALLOWED_HOSTS` (comma-separated, defaults to the production hosts + localhost), `SESSION_COOKIE_DOMAIN`, `LOG_LEVEL`. Cookies are Secure whenever DEBUG is False; TLS is terminated by the reverse proxy on the server.
 
 ### Key Files
 
-- `website/views.py` — Two views: `home` (renders page + handles POST appointment form with location), `get_available_times` (AJAX endpoint returning available 30-min slots from 9:00–17:30, filtered by location). Booking rules (`OPEN_WEEKDAYS`, `BOOKING_CUTOFF`, `booking_error`) live here and are enforced server-side
+- `website/booking.py` — Every booking rule in one place: `LOCATIONS`, `OPEN_WEEKDAYS`, `OPEN_SLOTS` (9:00–17:30 every 30 min, pending the clinic's confirmation of 9:00/9:30, lunch and 17:30), `BOOKING_CUTOFF`, `booking_error`, `available_times`
+- `website/forms.py` — `AppointmentForm` (ModelForm, used with `prefix='your'` so field names match the template: `your-name`, …). Validates phone/time/date rules and carries the `website` honeypot field
+- `website/views.py` — `home`: GET renders the page; POST is a JSON API used by the page's script: `{ok: true, appointment: {...}}` on success, `{ok: false, error, errors: {'your-field': [...]}}` with 400 (validation), 409 (slot just taken) or 429 (rate limit: `BOOKING_RATE_LIMIT` attempts per public IP per hour, skipped when the client IP can't be told apart from the proxy). Honeypot submissions get a fake success and are not saved. `get_available_times` returns the free slots for a date and location (cancelled bookings free their slot)
+- `website/admin.py` — appointment list with status (editable inline), date hierarchy, filters, CSV export and mark-confirmed/cancelled actions
+- `website/management/commands/backup_db.py` — SQLite online backup with pruning, run nightly on the server
 - `website/utils.py` — Placeholder for future email service integration
 - `clinic/urls.py` — Admin at `/yana/`, auth views at `/accounts/login/` and `/logout/`
 
