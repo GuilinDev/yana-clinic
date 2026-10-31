@@ -1,8 +1,14 @@
-from datetime import datetime
+import sqlite3
+import tempfile
+from datetime import date, datetime, time
+from io import StringIO
+from pathlib import Path
 from unittest import mock
 from zoneinfo import ZoneInfo
 
-from django.test import TestCase, override_settings
+from django.core.management import call_command
+from django.core.management.base import CommandError
+from django.test import TestCase, TransactionTestCase, override_settings
 
 from .models import Appointment
 from .views import BOOKING_CLOSED_MESSAGE
@@ -72,3 +78,36 @@ class BookingCutoffTests(TestCase):
             response = self.client.get('/')
         self.assertContains(response, 'min="2026-10-18"')
         self.assertContains(response, 'Please book online by 6:00 PM the day before your visit.')
+
+
+# TransactionTestCase: the SQLite backup API cannot copy while this connection
+# holds the open transaction that TestCase wraps around every test.
+class BackupDbTests(TransactionTestCase):
+    def test_backup_is_a_readable_copy_and_old_backups_are_pruned(self):
+        Appointment.objects.create(
+            name='Backup Test', phone='5550100', email='backup@example.com',
+            date=date(2026, 11, 3), time=time(10, 0), location='wilmington',
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            dest = Path(tmp)
+            for day in ('01', '02', '03'):  # older backups that should be pruned
+                (dest / f'db-2026-01-{day}-000000.sqlite3').write_bytes(b'')
+
+            out = StringIO()
+            call_command('backup_db', dest=tmp, keep=2, stdout=out)
+
+            backups = sorted(dest.glob('db-*.sqlite3'))
+            self.assertEqual(len(backups), 2)
+            self.assertEqual(backups[0].name, 'db-2026-01-03-000000.sqlite3')
+            self.assertIn('2 backup(s) kept', out.getvalue())
+
+            copy = sqlite3.connect(str(backups[-1]))
+            try:
+                rows = copy.execute('select name from website_appointment').fetchall()
+            finally:
+                copy.close()
+            self.assertEqual(rows, [('Backup Test',)])
+
+    def test_keep_must_be_positive(self):
+        with tempfile.TemporaryDirectory() as tmp, self.assertRaises(CommandError):
+            call_command('backup_db', dest=tmp, keep=0)

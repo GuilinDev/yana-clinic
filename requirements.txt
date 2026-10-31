@@ -1,13 +1,9 @@
-asgiref==3.7.2
-dj-database-url==2.1.0
-Django==5.0
-gunicorn==21.2.0
-packaging==23.2
-python-dateutil==2.8.2
+Django==5.2.18
+gunicorn==26.2.0
 python-decouple==3.8
-six==1.16.0
-sqlparse==0.4.4
-typing_extensions==4.9.0
-tzdata==2023.3
-urllib3==2.0.7
-whitenoise==6.6.0
+whitenoise==6.12.0
+
+# Transitive dependencies, pinned for reproducible image builds
+asgiref==3.13.0
+sqlparse==0.6.0
+tzdata==2026.6

@@ -1,3 +1,8 @@
 __pycache__/
 *.pyc
 .idea
+.env
+db.sqlite3
+staticfiles/
+.venv/
+venv/

@@ -4,14 +4,44 @@ on:
   push:
     branches:
       - 'main'
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: >-
+          Roll back / redeploy: tag of an already-built image (the commit SHA of an
+          earlier run). Leave empty to build and deploy the current commit.
+        required: false
+        default: ''
 
 env:
   DOCKERHUB_USERNAME: guilindev
-  IMAGE_NAME: guilindev/clinic:latest
+  IMAGE: guilindev/clinic
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || inputs.image_tag == ''
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+          cache: pip
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run checks and tests
+        env:
+          SECRET_KEY: ci-only-not-a-secret
+          DEBUG: 'False'
+        run: |
+          python manage.py check
+          python manage.py test --verbosity 2
+
   docker:
     runs-on: ubuntu-latest
+    needs: test
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -26,12 +56,18 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ env.IMAGE_NAME }}
+          tags: |
+            ${{ env.IMAGE }}:latest
+            ${{ env.IMAGE }}:${{ github.sha }}
           no-cache: true
 
   deploy:
     runs-on: ubuntu-latest
-    needs: docker
+    needs: [test, docker]
+    # Runs after a successful build, or on a manual rollback to an existing tag
+    if: ${{ !cancelled() && (needs.docker.result == 'success' || (github.event_name == 'workflow_dispatch' && inputs.image_tag != '')) }}
+    env:
+      DEPLOY_TAG: ${{ inputs.image_tag || github.sha }}
     steps:
       - name: Deploy to Vultr via SSH
         uses: appleboy/ssh-action@v1
@@ -39,17 +75,85 @@ jobs:
           host: ${{ secrets.VULTR_HOST }}
           username: ${{ secrets.VULTR_USERNAME }}
           key: ${{ secrets.VULTR_SSH_PRIVATE_KEY }}
+          envs: DEPLOY_TAG
           script: |
-            docker pull guilindev/clinic:latest
+            set -eu
+            IMAGE="guilindev/clinic:${DEPLOY_TAG}"
+            DATA=/root/clinic-data
+            BACKUPS=/root/clinic-backups
+            command -v curl >/dev/null || { echo "curl is required on the host for the health check"; exit 1; }
+            mkdir -p "$DATA" "$BACKUPS"
+
+            # One-time: generate a SECRET_KEY and keep it next to the database
+            if ! grep -qs '^SECRET_KEY=' "$DATA/clinic.env"; then
+              (umask 077; echo "SECRET_KEY=$(openssl rand -hex 50)" >> "$DATA/clinic.env")
+            fi
+
+            # Nightly database backup at 03:17 server time, 14 days kept
+            printf '%s\n' '17 3 * * * root timeout 300 docker exec clinic python manage.py backup_db --dest /backups --keep 14 >> /var/log/clinic-backup.log 2>&1' > /etc/cron.d/clinic-backup
+            chmod 644 /etc/cron.d/clinic-backup
+
+            start_container() {
+              docker run -d \
+                --name clinic \
+                --restart unless-stopped \
+                -p 8000:8000 \
+                -v "$DATA/db.sqlite3:/usr/src/app/db.sqlite3" \
+                -v "$BACKUPS:/backups" \
+                --env-file "$DATA/clinic.env" \
+                -e DEBUG=False \
+                -e SESSION_COOKIE_DOMAIN=.blessandjoywellness.com \
+                --log-opt max-size=10m --log-opt max-file=3 \
+                "$1" \
+                sh -c "python manage.py migrate --noinput && gunicorn --workers=3 --bind=0.0.0.0:8000 clinic.wsgi:application"
+            }
+
+            healthy() {
+              for i in $(seq 1 30); do
+                sleep 2
+                if curl -fsS -o /dev/null -H 'Host: blessandjoywellness.com' http://127.0.0.1:8000/; then
+                  return 0
+                fi
+              done
+              return 1
+            }
+
+            # Pull first: a missing tag fails here, before the running site is touched
+            docker pull "$IMAGE"
+
+            # Remember the running image so the script can roll back to it
+            PREVIOUS=$(docker inspect --format '{{.Image}}' clinic 2>/dev/null || true)
+            if [ -n "$PREVIOUS" ]; then
+              docker tag "$PREVIOUS" guilindev/clinic:previous
+            fi
+
+            docker stop clinic 2>/dev/null || true
+            # Snapshot the database while nothing is writing to it (10 snapshots kept)
+            if [ -f "$DATA/db.sqlite3" ]; then
+              cp -p "$DATA/db.sqlite3" "$BACKUPS/pre-deploy-$(date +%F-%H%M%S).sqlite3"
+              ls -1t "$BACKUPS"/pre-deploy-*.sqlite3 | tail -n +11 | xargs -r rm -f
+            fi
+            docker rm clinic 2>/dev/null || true
+
+            start_container "$IMAGE"
+            if healthy; then
+              echo "Deployed $IMAGE"
+              # Keep the 3 newest images (current, previous and one more) for quick rollbacks
+              docker images guilindev/clinic --format '{{.ID}}' | awk '!seen[$0]++' | tail -n +4 | xargs -r docker rmi -f 2>/dev/null || true
+              docker image prune -f
+              exit 0
+            fi
+
+            echo "::error::Health check failed for $IMAGE, rolling back"
+            docker logs --tail 100 clinic || true
             docker stop clinic 2>/dev/null || true
             docker rm clinic 2>/dev/null || true
-            docker run -d \
-              --name clinic \
-              --restart unless-stopped \
-              -p 8000:8000 \
-              -v /root/clinic-data/db.sqlite3:/usr/src/app/db.sqlite3 \
-              -e DEBUG=False \
-              -e SESSION_COOKIE_DOMAIN=.blessandjoywellness.com \
-              guilindev/clinic:latest \
-              sh -c "python manage.py migrate --noinput && gunicorn --workers=3 --bind=0.0.0.0:8000 clinic.wsgi:application"
-            docker image prune -f
+            if [ -n "$PREVIOUS" ]; then
+              start_container guilindev/clinic:previous
+              if healthy; then
+                echo "Rolled back to the previous image"
+              else
+                echo "::error::The previous image is not healthy either"
+              fi
+            fi
+            exit 1
