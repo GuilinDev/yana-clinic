@@ -61,7 +61,7 @@ There is no linter configured in this project.
 
 - **Wilmington**: 420 Main St, Wilmington, MA 01887 — Open Tue/Thu/Sat
 - **Chinatown**: 65 Harrison Ave. Suite 201B, Boston, MA 02111 — Open Mon/Wed/Fri
-- Both closed on Sunday and holidays
+- Both open 9:00–17:00 (last online start time 16:00), closed on Sunday and holidays
 - Appointment booking includes location selector; date validation enforces correct days per location
 - No same-day online booking; booking for the next day closes at 6:00 PM (America/New_York) the day before, so the clinic sees every booking in its evening review. Patients are told to text (978) 729-5878 instead
 

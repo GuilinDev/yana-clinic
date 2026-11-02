@@ -91,8 +91,9 @@ class BookingCutoffTests(TestCase):
         self.assertContains(response, 'Please book online by 6:00 PM the day before your visit.')
         self.assertContains(response, 'href="sms:+19787295878"')
         self.assertContains(response, 'confirm it by text message from (978) 729-5878')
-        # No social accounts, no newsletter, no links to pages that do not exist
-        for leftover in ('fa-facebook', 'nl-email', 'blog-details.html', 'href="#"'):
+        self.assertContains(response, '9:00-17:00')
+        # No social accounts, no newsletter, no links to pages that do not exist, no old hours
+        for leftover in ('fa-facebook', 'nl-email', 'blog-details.html', 'href="#"', '17:30'):
             self.assertNotContains(response, leftover)
 
     def test_head_requests_work_for_uptime_monitors(self):
