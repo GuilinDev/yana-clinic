@@ -1,4 +1,5 @@
 import os
+from email.utils import formataddr
 from pathlib import Path
 from decouple import Csv, config
 from django.core.exceptions import ImproperlyConfigured
@@ -139,7 +140,13 @@ EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 EMAIL_TIMEOUT = 15
-DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default=EMAIL_HOST_USER or 'blessandjoywellness@gmail.com')
+# The sender address; a bare address gets the clinic's name as display name.
+# (With an SMTP relay such as Resend, EMAIL_HOST_USER is not an address.)
+_from_email = config(
+    'DEFAULT_FROM_EMAIL',
+    default=EMAIL_HOST_USER if '@' in EMAIL_HOST_USER else 'blessandjoywellness@gmail.com',
+)
+DEFAULT_FROM_EMAIL = _from_email if '<' in _from_email else formataddr(('Bless and Joy Wellness', _from_email))
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 SITE_URL = config('SITE_URL', default='https://blessandjoywellness.com')
 BOOKING_NOTIFY_EMAIL = config('BOOKING_NOTIFY_EMAIL', default='blessandjoywellness@gmail.com')
