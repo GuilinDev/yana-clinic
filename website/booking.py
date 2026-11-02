@@ -1,7 +1,8 @@
-"""Booking rules shared by the views, the form and the templates.
+"""Booking rules shared by the views, the form, the emails and the templates.
 
 Everything about when the clinic can be booked online lives here, in one place.
 """
+from collections import Counter
 from datetime import time, timedelta
 
 from django.utils import timezone
@@ -27,16 +28,24 @@ OPEN_WEEKDAYS = {
     'chinatown': {0, 2, 4},   # Mon, Wed, Fri
 }
 
-# Start times patients can pick online: every 30 minutes from 9:00 to 17:30.
-# (The clinic has yet to confirm whether 9:00, 9:30, the 12:00-13:00 lunch
-# slots and 17:30 should stay bookable; adjust this list when it does.)
-OPEN_SLOTS = [time(hour, minute) for hour in range(9, 18) for minute in (0, 30)]
+# Start times patients can pick online: on the hour from 9:00, last start 16:00,
+# no lunch break (confirmed by the clinic, Nov 2026).
+OPEN_SLOTS = [time(hour, 0) for hour in range(9, 17)]
+
+# How many patients each start time can take. Wilmington treats two at a time.
+SLOT_CAPACITY = {
+    'wilmington': 2,
+    'chinatown': 1,
+}
 
 # No same-day online booking; booking for the next day closes at this time
 # (clinic time), so every booking is in before the clinic's evening review.
 BOOKING_CUTOFF = time(18, 0)
 TEXT_BOOKING_PHONE = '(978) 729-5878'
 TEXT_BOOKING_PHONE_LINK = '+19787295878'
+# The clinic confirms every online booking by text message from this number
+CONFIRM_PHONE = TEXT_BOOKING_PHONE
+CONFIRM_PHONE_LINK = TEXT_BOOKING_PHONE_LINK
 
 BOOKING_CUTOFF_LABEL = BOOKING_CUTOFF.strftime('%I:%M %p').lstrip('0')  # e.g. '6:00 PM'
 BOOKING_NOTICE = (
@@ -45,7 +54,7 @@ BOOKING_NOTICE = (
 )
 BOOKING_CLOSED_MESSAGE = 'Online booking for this date has closed. ' + BOOKING_NOTICE
 LOCATION_CLOSED_MESSAGE = 'The selected location is not open on this date. Please choose another date.'
-SLOT_TAKEN_MESSAGE = 'That time was just booked by someone else. Please choose another time.'
+SLOT_TAKEN_MESSAGE = 'That time was just filled by another booking. Please choose another time.'
 
 
 def earliest_booking_date():
@@ -63,19 +72,29 @@ def booking_error(selected_date, location):
     return None
 
 
-def booked_times(selected_date, location):
-    """Times already taken on a day; cancelled bookings free their slot."""
+def slot_capacity(location):
+    return SLOT_CAPACITY.get(location, 1)
+
+
+def booked_counts(selected_date, location):
+    """Active bookings per start time on a day; cancelled bookings free their place."""
     from .models import Appointment
 
-    return set(
+    times = (
         Appointment.objects.filter(date=selected_date, location=location)
         .exclude(status=Appointment.STATUS_CANCELLED)
         .values_list('time', flat=True)
     )
+    return Counter(times)
+
+
+def slot_is_full(selected_date, slot, location):
+    return booked_counts(selected_date, location)[slot] >= slot_capacity(location)
 
 
 def available_times(selected_date, location):
     if booking_error(selected_date, location):
         return []
-    taken = booked_times(selected_date, location)
-    return [slot for slot in OPEN_SLOTS if slot not in taken]
+    counts = booked_counts(selected_date, location)
+    capacity = slot_capacity(location)
+    return [slot for slot in OPEN_SLOTS if counts[slot] < capacity]

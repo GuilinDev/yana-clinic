@@ -7,6 +7,7 @@ from unittest import mock
 from zoneinfo import ZoneInfo
 
 from django.contrib.auth.models import User
+from django.core import mail
 from django.core.cache import cache
 from django.core.management import call_command
 from django.core.management.base import CommandError
@@ -89,6 +90,10 @@ class BookingCutoffTests(TestCase):
         self.assertContains(response, 'min="2026-10-18"')
         self.assertContains(response, 'Please book online by 6:00 PM the day before your visit.')
         self.assertContains(response, 'href="sms:+19787295878"')
+        self.assertContains(response, 'confirm it by text message from (978) 729-5878')
+        # No social accounts, no newsletter, no links to pages that do not exist
+        for leftover in ('fa-facebook', 'nl-email', 'blog-details.html', 'href="#"'):
+            self.assertNotContains(response, leftover)
 
     def test_head_requests_work_for_uptime_monitors(self):
         self.assertEqual(self.client.head('/').status_code, 200)
@@ -120,6 +125,7 @@ class BookingFormTests(TestCase):
         self.assertEqual(payload['appointment']['time_display'], '10:00 AM')
         self.assertEqual(payload['appointment']['location_name'], 'Wilmington')
         self.assertEqual(payload['appointment']['phone_link'], '+19787295878')
+        self.assertEqual(payload['appointment']['confirm_phone'], '(978) 729-5878')
         appointment = Appointment.objects.get()
         self.assertEqual(appointment.phone, '(978) 555-0100')
         self.assertEqual(appointment.status, Appointment.STATUS_PENDING)
@@ -139,9 +145,10 @@ class BookingFormTests(TestCase):
         self.assertEqual(response.json()['errors'], {'your-phone': ['Please enter a valid phone number.']})
 
     def test_time_must_be_an_open_slot(self):
-        response = self.post(**{'your-time': '08:15'})
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()['errors'], {'your-time': ['Please choose a time from the list.']})
+        for bad_time in ('08:00', '10:30', '17:00'):
+            response = self.post(**{'your-time': bad_time})
+            self.assertEqual(response.status_code, 400, bad_time)
+            self.assertEqual(response.json()['errors'], {'your-time': ['Please choose a time from the list.']})
 
     def test_honeypot_submission_is_ignored_but_looks_successful(self):
         response = self.post(**{'your-website': 'http://spam.example'})
@@ -149,25 +156,32 @@ class BookingFormTests(TestCase):
         self.assertTrue(response.json()['ok'])
         self.assertFalse(Appointment.objects.exists())
 
-    def test_slot_cannot_be_double_booked(self):
+    def test_wilmington_takes_two_patients_per_hour(self):
         self.assertEqual(self.post().status_code, 200)
-        response = self.post(**{'your-name': 'Second Patient', 'your-email': 'second@example.com'})
+        self.assertEqual(self.post(**{'your-name': 'Second Patient', 'your-email': 'second@example.com'}).status_code, 200)
+        response = self.post(**{'your-name': 'Third Patient', 'your-email': 'third@example.com'})
         self.assertEqual(response.status_code, 409)
         self.assertEqual(response.json()['errors'], {'your-time': [SLOT_TAKEN_MESSAGE]})
-        self.assertEqual(Appointment.objects.count(), 1)
-        # Another location or a cancelled booking does not block the slot
-        self.assertEqual(self.post(**{'your-date': '2026-10-19', 'your-location': 'chinatown'}).status_code, 200)
-        Appointment.objects.filter(location='wilmington').update(status=Appointment.STATUS_CANCELLED)
-        self.assertEqual(self.post(**{'your-name': 'Third Patient'}).status_code, 200)
+        self.assertEqual(Appointment.objects.count(), 2)
+        # A cancelled booking frees its place
+        Appointment.objects.filter(name='Second Patient').update(status=Appointment.STATUS_CANCELLED)
+        self.assertEqual(self.post(**{'your-name': 'Third Patient', 'your-email': 'third@example.com'}).status_code, 200)
 
-    def test_available_times_exclude_booked_slots(self):
-        self.post()
+    def test_chinatown_takes_one_patient_per_hour(self):
+        chinatown = {'your-date': '2026-10-19', 'your-location': 'chinatown'}  # Monday
+        self.assertEqual(self.post(**chinatown).status_code, 200)
+        response = self.post(**{**chinatown, 'your-name': 'Second Patient'})
+        self.assertEqual(response.status_code, 409)
+        self.assertEqual(Appointment.objects.count(), 1)
+
+    def test_available_times_reflect_capacity(self):
         response = self.client.get('/get-available-times/', {'date': '2026-10-17', 'location': 'wilmington'})
         times = response.json()['available_times']
-        self.assertNotIn('10:00', times)
-        self.assertIn('10:30', times)
-        self.assertEqual(times[0], '09:00')
-        self.assertEqual(times[-1], '17:30')
+        self.assertEqual(times, ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00'])
+        self.post()
+        self.assertIn('10:00', self.client.get('/get-available-times/', {'date': '2026-10-17', 'location': 'wilmington'}).json()['available_times'])
+        self.post(**{'your-name': 'Second Patient', 'your-email': 'second@example.com'})
+        self.assertNotIn('10:00', self.client.get('/get-available-times/', {'date': '2026-10-17', 'location': 'wilmington'}).json()['available_times'])
 
     def test_rate_limit_applies_per_public_client_address(self):
         # (The documentation ranges 203.0.113.0/24 etc. count as private to ipaddress, so use real public IPs)
@@ -186,6 +200,53 @@ class BookingFormTests(TestCase):
         for _ in range(BOOKING_RATE_LIMIT + 1):
             response = self.client.post('/', {'your-name': 'x'})
             self.assertEqual(response.status_code, 400)
+
+
+@override_settings(STORAGES=PLAIN_STATIC, BOOKING_EMAILS_ENABLED=True, BOOKING_EMAILS_IN_BACKGROUND=False,
+                   BOOKING_NOTIFY_EMAIL='clinic@example.com', SITE_URL='https://example.com')
+class BookingEmailTests(TestCase):
+    def setUp(self):
+        self.now = clinic_now(2026, 10, 16, 9, 0)
+        self.now.start()
+        self.addCleanup(self.now.stop)
+
+    def book(self, **overrides):
+        return self.client.post('/', {**VALID_BOOKING, **overrides})
+
+    def test_clinic_and_patient_are_emailed(self):
+        response = self.book(**{'your-message': 'My knee hurts since March'})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(mail.outbox), 2)
+        clinic, patient = mail.outbox
+
+        self.assertEqual(clinic.to, ['clinic@example.com'])
+        self.assertEqual(clinic.reply_to, ['test@example.com'])
+        self.assertEqual(clinic.subject, 'New appointment request: Sat Oct 17, 10:00 AM, Wilmington, Test Patient')
+        self.assertIn('(978) 555-0100', clinic.body)
+        self.assertIn('https://example.com/yana/website/appointment/', clinic.body)
+        self.assertNotIn('knee', clinic.body)  # health details stay in the admin
+        self.assertIn('Message:    yes, see the admin', clinic.body)
+
+        self.assertEqual(patient.to, ['test@example.com'])
+        self.assertEqual(patient.reply_to, ['clinic@example.com'])
+        self.assertIn('Saturday, October 17, 2026', patient.body)
+        self.assertIn('confirm your appointment by text message from (978) 729-5878', patient.body)
+        self.assertIn('420 Main Street', patient.body)
+        name, content, mimetype = patient.attachments[0]
+        self.assertEqual((name, mimetype), ('appointment.ics', 'text/calendar'))
+        self.assertIn('DTSTART;TZID=America/New_York:20261017T100000', content)
+        self.assertIn('DTEND;TZID=America/New_York:20261017T110000', content)
+
+    @override_settings(BOOKING_EMAILS_ENABLED=False)
+    def test_nothing_is_sent_until_email_is_configured(self):
+        self.assertEqual(self.book().status_code, 200)
+        self.assertEqual(mail.outbox, [])
+
+    def test_email_failure_does_not_break_the_booking(self):
+        with mock.patch('django.core.mail.EmailMessage.send', side_effect=OSError('smtp down')):
+            response = self.book()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Appointment.objects.count(), 1)
 
 
 @override_settings(STORAGES=PLAIN_STATIC)

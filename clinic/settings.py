@@ -125,6 +125,27 @@ LOGGING = {
 CSRF_TRUSTED_ORIGINS = ['https://blessandjoywellness.com', 'https://www.blessandjoywellness.com']
 SESSION_COOKIE_DOMAIN = config('SESSION_COOKIE_DOMAIN', default=None)
 
+# Email: booking notifications to the clinic and confirmations to patients.
+# Nothing is sent until EMAIL_HOST_PASSWORD is set (the deploy script copies the
+# EMAIL_* GitHub secrets into the server's clinic.env). Works with Gmail SMTP
+# (an app password) or any SMTP relay such as Resend.
+EMAIL_BACKEND = config(
+    'EMAIL_BACKEND',
+    default='django.core.mail.backends.console.EmailBackend' if DEBUG else 'django.core.mail.backends.smtp.EmailBackend',
+)
+EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+EMAIL_TIMEOUT = 15
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default=EMAIL_HOST_USER or 'blessandjoywellness@gmail.com')
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+SITE_URL = config('SITE_URL', default='https://blessandjoywellness.com')
+BOOKING_NOTIFY_EMAIL = config('BOOKING_NOTIFY_EMAIL', default='blessandjoywellness@gmail.com')
+BOOKING_EMAILS_ENABLED = config('BOOKING_EMAILS_ENABLED', default=bool(EMAIL_HOST_PASSWORD) or DEBUG, cast=bool)
+BOOKING_EMAILS_IN_BACKGROUND = config('BOOKING_EMAILS_IN_BACKGROUND', default=True, cast=bool)
+
 # TLS is terminated by the reverse proxy in front of the container. Only send
 # cookies over HTTPS outside local development. (HSTS and the HTTPS redirect are
 # left to the proxy until its configuration has been confirmed.)

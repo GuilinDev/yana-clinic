@@ -124,3 +124,11 @@ html {
     min-width: 90px;
     color: #888;
 }
+
+/* Footer contact details became links; keep them readable on the dark background */
+.footer-contact a,
+.footer-contact a:hover,
+.footer-contact a:focus {
+    color: #ffffff;
+    text-decoration: underline;
+}

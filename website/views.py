@@ -11,15 +11,18 @@ from django.views.decorators.http import require_http_methods, require_safe
 from .booking import (
     BOOKING_CLOSED_MESSAGE,
     BOOKING_CUTOFF_LABEL,
+    CONFIRM_PHONE,
+    CONFIRM_PHONE_LINK,
     LOCATIONS,
     SLOT_TAKEN_MESSAGE,
     TEXT_BOOKING_PHONE,
     TEXT_BOOKING_PHONE_LINK,
     available_times,
-    booked_times,
     earliest_booking_date,
+    slot_is_full,
 )
 from .forms import AppointmentForm
+from .notifications import notify_new_booking
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +42,8 @@ def booking_context():
         'booking_closed_message': BOOKING_CLOSED_MESSAGE,
         'text_phone': TEXT_BOOKING_PHONE,
         'text_phone_link': TEXT_BOOKING_PHONE_LINK,
+        'confirm_phone': CONFIRM_PHONE,
+        'confirm_phone_link': CONFIRM_PHONE_LINK,
         'locations': LOCATIONS,
     }
 
@@ -83,6 +88,8 @@ def appointment_payload(appointment):
         'address': location['address'],
         'phone': location['phone'],
         'phone_link': location['phone_link'],
+        'confirm_phone': CONFIRM_PHONE,
+        'confirm_phone_link': CONFIRM_PHONE_LINK,
     }
 
 
@@ -106,9 +113,9 @@ def home(request):
         return JsonResponse({'ok': True, 'appointment': appointment_payload(form.instance)})
 
     # SQLite transactions start in IMMEDIATE mode (see settings), so the
-    # check-then-insert below is serialised and two patients can't take one slot.
+    # check-then-insert below is serialised and a slot can't be overbooked.
     with transaction.atomic():
-        if form.cleaned_data['time'] in booked_times(form.cleaned_data['date'], form.cleaned_data['location']):
+        if slot_is_full(form.cleaned_data['date'], form.cleaned_data['time'], form.cleaned_data['location']):
             return JsonResponse(
                 {'ok': False, 'error': SLOT_TAKEN_MESSAGE, 'errors': {'your-time': [SLOT_TAKEN_MESSAGE]}},
                 status=409,
@@ -120,6 +127,7 @@ def home(request):
         'New appointment #%s on %s at %s @ %s',
         appointment.pk, appointment.date, appointment.time.strftime('%H:%M'), appointment.get_location_display(),
     )
+    notify_new_booking(appointment)
     return JsonResponse({'ok': True, 'appointment': appointment_payload(appointment)})
 
 

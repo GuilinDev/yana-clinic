@@ -38,7 +38,7 @@
         <div class="container h-100">
             <div class="row h-100 align-items-center">
                 <!-- Top Content -->
-                <div class="col-6 col-md-9 col-lg-8">
+                <div class="col-12">
                     <div class="top-header-content">
                         <a href="tel:+19787295878" data-toggle="tooltip" data-placement="bottom"
                            title="Call Wilmington"><i class="fa fa-phone"></i> <span>Wilmington: (978) 729-5878</span></a>
@@ -46,21 +46,6 @@
                            title="Call Chinatown Boston"><i class="fa fa-phone"></i> <span>Chinatown: (617) 451-7500</span></a>
                         <a href="mailto:blessandjoywellness@gmail.com" data-toggle="tooltip" data-placement="bottom" title="Email us"><i
                                 class="fa fa-envelope"></i> <span>blessandjoywellness@gmail.com</span></a>
-                    </div>
-                </div>
-                <!-- Top Header Social Info -->
-                <div class="col-6 col-md-3 col-lg-4">
-                    <div class="top-header-social-info text-right">
-                        <a href="#" data-toggle="tooltip" data-placement="bottom" title="Facebook"><i
-                                class="fa fa-facebook"></i></a>
-                        <a href="#" data-toggle="tooltip" data-placement="bottom" title="Twitter"><i
-                                class="fa fa-twitter"></i></a>
-                        <a href="#" data-toggle="tooltip" data-placement="bottom" title="Google Plus"><i
-                                class="fa fa-google-plus"></i></a>
-                        <a href="#" data-toggle="tooltip" data-placement="bottom" title="Linkedin"><i
-                                class="fa fa-linkedin"></i></a>
-                        <a href="#" data-toggle="tooltip" data-placement="bottom" title="Pinterest"><i
-                                class="fa fa-pinterest"></i></a>
                     </div>
                 </div>
             </div>
@@ -102,10 +87,6 @@
                                 <li><a href="#membership">Membership</a></li>
                                 <li><a href="#insurance">Insurance</a></li>
                                 <li><a href="https://www.nutrametrix.com/blessandjoyclinic">Nutrition Support</a>
-                                    {#                                    <ul class="dropdown">#}
-                                    {#                                        <li><a href="blog.html">- Blog</a></li>#}
-                                    {#                                        <li><a href="blog-details.html">- Blog Details</a></li>#}
-                                    {#                                    </ul>#}
                                 </li>
                                 <li><a href="#direction">Direction</a></li>
                             </ul>
@@ -353,32 +334,24 @@
                         <!-- Single Service -->
                         <div class="col-6 col-md-4">
                             <div class="single-service mb-70">
-                                {#                                <img src="{% static 'website/img/core-img/s3.png' %}" alt="">#}
-                                {#                                <h6>Teeth Whitening</h6>#}
                             </div>
                         </div>
 
                         <!-- Single Service -->
                         <div class="col-6 col-md-4">
                             <div class="single-service mb-70">
-                                {#                                <img src="{% static 'website/img/core-img/s4.png' %}" alt="">#}
-                                {#                                <h6>Cosmetic Dentistry</h6>#}
                             </div>
                         </div>
 
                         <!-- Single Service -->
                         <div class="col-6 col-md-4">
                             <div class="single-service mb-70">
-                                {#                                <img src="{% static 'website/img/core-img/s5.png' %}" alt="">#}
-                                {#                                <h6>Examination</h6>#}
                             </div>
                         </div>
 
                         <!-- Single Service -->
                         <div class="col-6 col-md-4">
                             <div class="single-service mb-70">
-                                {#                                <img src="{% static 'website/img/core-img/s1.png' %}" alt="">#}
-                                {#                                <h6>Teeth Pain</h6>#}
                             </div>
                         </div>
                     </div>
@@ -872,7 +845,7 @@
                 </button>
             </div>
             <div class="modal-body" id="booking-success-body">
-                <p>Thank you, your appointment request has been received. The clinic will contact you to confirm.</p>
+                <p>Thank you, your appointment request has been received. The clinic will confirm it by text message from {{ confirm_phone }}.</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -884,7 +857,7 @@
 <!-- Book An Oppointment Area End -->
 
 <!-- ***** Clinic Area Start ***** -->
-<section class="dentist-area section-padding-100-0">
+<section id="doctor" class="dentist-area section-padding-100-0">
     <div class="container">
         <div class="row">
             <!-- Section Heading -->
@@ -904,11 +877,6 @@
                     <!-- Dentist Content -->
                     <div class="dentist-content">
                         <!-- Social Info -->
-                        {#                        <div class="dentist-social-info">#}
-                        {#                            <a href="#"><i class="fa fa-facebook"></i></a>#}
-                        {#                            <a href="#"><i class="fa fa-twitter"></i></a>#}
-                        {#                            <a href="#"><i class="fa fa-google-plus"></i></a>#}
-                        {#                        </div>#}
                         <!-- Dentist Info -->
                         <div class="dentist-info bg-gradient-overlay">
                             <h5>Dr. Hai Lok Choy</h5>
@@ -1050,18 +1018,13 @@
             <!-- Single Blog Item -->
             <div class="col-12 col-md-6 col-lg-4">
                 <div class="single-blog-item mb-100">
-                    <a href="./blog-details.html">
-                        <img src="{% static 'website/img/bg-img/4.jpg' %}" alt="">
-                    </a>
+                    <img src="{% static 'website/img/bg-img/4.jpg' %}" alt="Chinese herbal medicine" loading="lazy">
                     <!-- Blog Content -->
                     <div class="blog-content">
-                        <a href="./blog-details.html" class="post-title">Herbal Medicine</a>
+                        <h5 class="post-title">Herbal Medicine</h5>
                         <p>Chinese Herbal Medicine uses an extensive range of natural plants and minerals. Prescriptions
                             are tailored to individual patients, aiming to treat the root causes of illness and restore
                             balance in the body's energy, or Qi.</p>
-                        <div class="post-meta">
-                            <a href="#"><i class="icon_clock_alt"></i> 26 Dec 2023</a>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -1069,18 +1032,13 @@
             <!-- Single Blog Item -->
             <div class="col-12 col-md-6 col-lg-4">
                 <div class="single-blog-item mb-100">
-                    <a href="./blog-details.html">
-                        <img src="{% static 'website/img/bg-img/5.jpg' %}" alt="">
-                    </a>
+                    <img src="{% static 'website/img/bg-img/5.jpg' %}" alt="Acupuncture treatment" loading="lazy">
                     <!-- Blog Content -->
                     <div class="blog-content">
-                        <a href="./blog-details.html" class="post-title">Acupuncture</a>
+                        <h5 class="post-title">Acupuncture</h5>
                         <p>Acupuncture involves the insertion of very fine needles into specific points on the body.
                             This ancient practice is believed to stimulate the body's natural healing processes and
                             balance energy flow, treating a variety of conditions from pain to stress.</p>
-                        <div class="post-meta">
-                            <a href="#"><i class="icon_clock_alt"></i> 26 Dec 2023</a>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -1088,18 +1046,13 @@
             <!-- Single Blog Item -->
             <div class="col-12 col-md-6 col-lg-4">
                 <div class="single-blog-item mb-100">
-                    <a href="./blog-details.html">
-                        <img src="{% static 'website/img/bg-img/6.jpg' %}" alt="">
-                    </a>
+                    <img src="{% static 'website/img/bg-img/6.jpg' %}" alt="Tui Na massage" loading="lazy">
                     <!-- Blog Content -->
                     <div class="blog-content">
-                        <a href="./blog-details.html" class="post-title">Tui Na Massage</a>
+                        <h5 class="post-title">Tui Na Massage</h5>
                         <p>Tui Na is a therapeutic form of massage rooted in Traditional Chinese Medicine. It involves
                             various hand techniques and manipulations to stimulate acupuncture points and meridians,
                             facilitating the flow of Qi and promoting healing.</p>
-                        <div class="post-meta">
-                            <a href="#"><i class="icon_clock_alt"></i> 26 Dec 2023</a>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -1144,54 +1097,6 @@
             </div>
         </div>
 
-        {#        <div class="row">#}
-        {#            <!-- Contact Information -->#}
-        {#            <div class="col-12 col-md-4">#}
-        {#                <div class="contact-information">#}
-        {#                    <h5>Address</h5>#}
-        {#                    <p>420 Main Street, Wilmington, MA 01887</p>#}
-        {##}
-        {#                    <h5>Phone</h5>#}
-        {#                    <p>(978) 729-5878</p>#}
-        {##}
-        {#                    <h5>Email</h5>#}
-        {#                    <p class="mb-0">blessandjoywellness@gmail.com</p>#}
-        {#                </div>#}
-        {#            </div>#}
-        {##}
-        {#            <!-- Contact Form -->#}
-        {#            <div class="col-12 col-md-8">#}
-        {#                <div class="contact-form">#}
-        {#                    <!-- Section Heading -->#}
-        {#                    <div class="section-heading">#}
-        {#                        <h2>Get In Touch</h2>#}
-        {#                        <div class="line"></div>#}
-        {#                    </div>#}
-        {#                    <!-- Form -->#}
-        {#                    <form action="{% url 'home' %}" method="post">#}
-        {#                        {% csrf_token %}#}
-        {#                        <div class="row">#}
-        {#                            <div class="col-lg-6">#}
-        {#                                <input type="text" name="message-name" class="form-control mb-30"#}
-        {#                                       placeholder="Your Name">#}
-        {#                            </div>#}
-        {#                            <div class="col-lg-6">#}
-        {#                                <input type="email" name="message-email" class="form-control mb-30"#}
-        {#                                       placeholder="Your Email">#}
-        {#                            </div>#}
-        {#                            <div class="col-12">#}
-        {#                                <textarea name="message" class="form-control mb-30"#}
-        {#                                          placeholder="Your Message"></textarea>#}
-        {#                            </div>#}
-        {#                            <div class="col-12">#}
-        {#                                <button type="submit" class="btn dento-btn">Send Message</button>#}
-        {#                            </div>#}
-        {#                        </div>#}
-        {#                    </form>#}
-        {##}
-        {#                </div>#}
-        {#            </div>#}
-        {#        </div>#}
 
     </div>
 </section>
@@ -1245,49 +1150,18 @@
                     <nav>
                         <ul class="quick-links">
                             <li><a href="#about">About</a></li>
-                            <li><a href="#">FAQs</a></li>
-                            <li><a href="#direction">Direction</a></li>
-                            <li><a href="#">Policy</a></li>
-                            <li><a href="#">News</a></li>
-                            <li><a href="#">Advisors</a></li>
-                            <li><a href="#">Doctor</a></li>
                             <li><a href="#services">Services</a></li>
-                            <li><a href="#">Legals</a></li>
+                            <li><a href="#pricing">Pricing</a></li>
+                            <li><a href="#membership">Membership</a></li>
+                            <li><a href="#insurance">Insurance</a></li>
+                            <li><a href="#doctor">Doctor</a></li>
+                            <li><a href="#direction">Direction</a></li>
+                            <li><a href="#appointment">Appointment</a></li>
                         </ul>
                     </nav>
                 </div>
             </div>
 
-            <!-- Single Footer Widget -->
-            <div class="col-12 col-sm-6 col-lg">
-                <div class="single-footer-widget">
-                    <!-- Widget Title -->
-                    <h5 class="widget-title">Newsletter</h5>
-
-                    <p>We will send out our newest articles and some great offers</p>
-                    <!-- Newsletter Form -->
-                    <div class="footer-newsletter-form">
-                        <form action="#" method="post">
-                            <input type="email" name="nl-email" value="" placeholder="Email Address">
-                            <button type="submit"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
-                        </form>
-                    </div>
-
-                    <!-- Social Info -->
-                    <div class="footer-social-info">
-                        <a href="#" data-toggle="tooltip" data-placement="top" title="Facebook"><i
-                                class="fa fa-facebook"></i></a>
-                        <a href="#" data-toggle="tooltip" data-placement="top" title="Twitter"><i
-                                class="fa fa-twitter"></i></a>
-                        <a href="#" data-toggle="tooltip" data-placement="top" title="Google Plus"><i
-                                class="fa fa-instagram"></i></a>
-                        <a href="#" data-toggle="tooltip" data-placement="top" title="Linkedin"><i
-                                class="fa fa-linkedin"></i></a>
-                        <a href="#" data-toggle="tooltip" data-placement="top" title="Pinterest"><i
-                                class="fa fa-pinterest"></i></a>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -1297,8 +1171,8 @@
             <div class="col-12">
                 <div class="copywrite-content">
                     <p>
-                        Copyright &copy;<script>document.write(new Date().getFullYear());</script>
-                        All rights reserved
+                        Copyright &copy; <script>document.write(new Date().getFullYear());</script>
+                        Bless and Joy Wellness. All rights reserved.
                     </p>
                 </div>
             </div>
@@ -1336,6 +1210,7 @@
         const bookingClosedMessage = "{{ booking_closed_message|escapejs }}";
         const textPhone = "{{ text_phone|escapejs }}";
         const textPhoneLink = "{{ text_phone_link|escapejs }}";
+        const confirmPhone = "{{ confirm_phone|escapejs }}";
         const openDays = {
             'wilmington': {name: 'Wilmington', days: [2, 4, 6], label: 'Tuesday, Thursday or Saturday'},  // JS: 0=Sun
             'chinatown': {name: 'Chinatown', days: [1, 3, 5], label: 'Monday, Wednesday or Friday'}
@@ -1508,7 +1383,7 @@
                 'DTEND;TZID=America/New_York:' + end,
                 'SUMMARY:Bless and Joy Wellness - ' + a.service.replace(/[,;\\]/g, ' '),
                 'LOCATION:' + a.address.replace(/,/g, '\\,'),
-                'DESCRIPTION:Phone ' + a.phone + '. The clinic will contact you to confirm this appointment.',
+                'DESCRIPTION:Phone ' + a.phone + '. The clinic will confirm by text message from ' + confirmPhone + '.',
                 'END:VEVENT',
                 'END:VCALENDAR'
             ].join('\r\n');
@@ -1517,7 +1392,7 @@
 
         function showSuccess(a) {
             document.getElementById('booking-success-body').innerHTML =
-                '<p>Thank you, your appointment request has been received. The clinic will contact you to confirm.</p>' +
+                '<p>Thank you, your appointment request has been received. The clinic will confirm it by text message from ' + escapeHtml(confirmPhone) + '.</p>' +
                 '<ul class="booking-summary">' +
                 '<li><span>Date</span> ' + escapeHtml(a.date_display) + '</li>' +
                 '<li><span>Time</span> ' + escapeHtml(a.time_display) + '</li>' +

@@ -68,6 +68,12 @@ jobs:
     if: ${{ !cancelled() && (needs.docker.result == 'success' || (github.event_name == 'workflow_dispatch' && inputs.image_tag != '')) }}
     env:
       DEPLOY_TAG: ${{ inputs.image_tag || github.sha }}
+      # Optional: booking emails. Missing secrets are empty and leave clinic.env untouched.
+      EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
+      EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
+      EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
+      DEFAULT_FROM_EMAIL: ${{ secrets.DEFAULT_FROM_EMAIL }}
+      BOOKING_NOTIFY_EMAIL: ${{ secrets.BOOKING_NOTIFY_EMAIL }}
     steps:
       - name: Deploy to Vultr via SSH
         uses: appleboy/ssh-action@v1
@@ -75,7 +81,7 @@ jobs:
           host: ${{ secrets.VULTR_HOST }}
           username: ${{ secrets.VULTR_USERNAME }}
           key: ${{ secrets.VULTR_SSH_PRIVATE_KEY }}
-          envs: DEPLOY_TAG
+          envs: DEPLOY_TAG,EMAIL_HOST,EMAIL_HOST_USER,EMAIL_HOST_PASSWORD,DEFAULT_FROM_EMAIL,BOOKING_NOTIFY_EMAIL
           script: |
             set -eu
             IMAGE="guilindev/clinic:${DEPLOY_TAG}"
@@ -88,6 +94,21 @@ jobs:
             if ! grep -qs '^SECRET_KEY=' "$DATA/clinic.env"; then
               (umask 077; echo "SECRET_KEY=$(openssl rand -hex 50)" >> "$DATA/clinic.env")
             fi
+
+            # Email settings come from GitHub secrets; an empty value keeps whatever the file has
+            set_env() {
+              [ -n "$2" ] || return 0
+              if grep -qs "^$1=" "$DATA/clinic.env"; then
+                sed -i "s|^$1=.*|$1=$2|" "$DATA/clinic.env"
+              else
+                echo "$1=$2" >> "$DATA/clinic.env"
+              fi
+            }
+            set_env EMAIL_HOST "$EMAIL_HOST"
+            set_env EMAIL_HOST_USER "$EMAIL_HOST_USER"
+            set_env EMAIL_HOST_PASSWORD "$EMAIL_HOST_PASSWORD"
+            set_env DEFAULT_FROM_EMAIL "$DEFAULT_FROM_EMAIL"
+            set_env BOOKING_NOTIFY_EMAIL "$BOOKING_NOTIFY_EMAIL"
 
             # Nightly database backup at 03:17 server time, 14 days kept
             printf '%s\n' '17 3 * * * root timeout 300 docker exec clinic python manage.py backup_db --dest /backups --keep 14 >> /var/log/clinic-backup.log 2>&1' > /etc/cron.d/clinic-backup
