@@ -1,4 +1,5 @@
 import os
+import re
 from email.utils import formataddr
 from pathlib import Path
 from decouple import Csv, config
@@ -128,23 +129,29 @@ SESSION_COOKIE_DOMAIN = config('SESSION_COOKIE_DOMAIN', default=None)
 
 # Email: booking notifications to the clinic and confirmations to patients.
 # Nothing is sent until EMAIL_HOST_PASSWORD is set (the deploy script copies the
-# EMAIL_* GitHub secrets into the server's clinic.env). Works with Gmail SMTP
-# (an app password) or any SMTP relay such as Resend.
+# EMAIL_* GitHub secrets into the server's clinic.env). One secret is enough:
+# a Resend API key (re_...) selects Resend's SMTP relay and the clinic's own
+# domain as sender; anything else is treated as a Gmail app password for the
+# clinic's Gmail account. EMAIL_HOST, EMAIL_HOST_USER and DEFAULT_FROM_EMAIL
+# can still be set explicitly.
 EMAIL_BACKEND = config(
     'EMAIL_BACKEND',
     default='django.core.mail.backends.console.EmailBackend' if DEBUG else 'django.core.mail.backends.smtp.EmailBackend',
 )
-EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+if re.fullmatch(r'(?:[a-z]{4} ?){4}', EMAIL_HOST_PASSWORD):
+    # Google shows app passwords as "abcd efgh ijkl mnop"; the spaces are display only
+    EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD.replace(' ', '')
+_using_resend = EMAIL_HOST_PASSWORD.startswith('re_')
+EMAIL_HOST = config('EMAIL_HOST', default='smtp.resend.com' if _using_resend else 'smtp.gmail.com')
 EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
 EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
-EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='resend' if _using_resend else 'blessandjoywellness@gmail.com')
 EMAIL_TIMEOUT = 15
-# The sender address; a bare address gets the clinic's name as display name.
-# (With an SMTP relay such as Resend, EMAIL_HOST_USER is not an address.)
+# The sender address; a bare address gets the clinic's name as display name
 _from_email = config(
     'DEFAULT_FROM_EMAIL',
-    default=EMAIL_HOST_USER if '@' in EMAIL_HOST_USER else 'blessandjoywellness@gmail.com',
+    default='booking@blessandjoywellness.com' if _using_resend else 'blessandjoywellness@gmail.com',
 )
 DEFAULT_FROM_EMAIL = _from_email if '<' in _from_email else formataddr(('Bless and Joy Wellness', _from_email))
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
