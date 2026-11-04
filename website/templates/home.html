@@ -1260,6 +1260,14 @@
             fieldError('your-time', '');
         });
 
+        // Open the calendar when the patient clicks anywhere in the date field,
+        // not only on the small icon (browsers without showPicker keep their default)
+        dateInput.addEventListener("click", function () {
+            if (typeof this.showPicker === 'function') {
+                try { this.showPicker(); } catch (e) { /* already open or not allowed: native behaviour stays */ }
+            }
+        });
+
         dateInput.addEventListener("change", function () {
             resetTimes();
             fieldError('your-date', '');

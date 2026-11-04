@@ -132,3 +132,16 @@ html {
     color: #ffffff;
     text-decoration: underline;
 }
+
+/* Date field: dark-scheme rendering gives a white calendar icon and a readable
+   native picker on the dark form; the icon is enlarged and the whole field is clickable */
+.appointment-form input[type="date"] {
+    color-scheme: dark;
+    cursor: pointer;
+}
+.appointment-form input[type="date"]::-webkit-calendar-picker-indicator {
+    width: 26px;
+    height: 26px;
+    opacity: 1;
+    cursor: pointer;
+}
