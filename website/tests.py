@@ -277,6 +277,16 @@ class AdminTests(TestCase):
         self.appointment.refresh_from_db()
         self.assertEqual(self.appointment.status, Appointment.STATUS_CONFIRMED)
 
+    def test_bulk_delete_is_not_offered(self):
+        response = self.client.get('/yana/website/appointment/')
+        self.assertNotContains(response, 'value="delete_selected"')
+        self.assertContains(response, 'value="mark_cancelled"')
+        # The action cannot be smuggled in by posting it either
+        self.client.post('/yana/website/appointment/', {
+            'action': 'delete_selected', '_selected_action': [self.appointment.pk], 'post': 'yes',
+        })
+        self.assertTrue(Appointment.objects.filter(pk=self.appointment.pk).exists())
+
 
 # TransactionTestCase: the SQLite backup API cannot copy while this connection
 # holds the open transaction that TestCase wraps around every test.
@@ -309,3 +319,59 @@ class BackupDbTests(TransactionTestCase):
     def test_keep_must_be_positive(self):
         with tempfile.TemporaryDirectory() as tmp, self.assertRaises(CommandError):
             call_command('backup_db', dest=tmp, keep=0)
+
+
+class RestoreAppointmentsTests(TransactionTestCase):
+    def make(self, name, day, **extra):
+        return Appointment.objects.create(
+            name=name, phone='(978) 555-0100', email=f'{name.lower()}@example.com', service='Acupuncture',
+            date=date(2026, 11, day), time=time(10, 0), location='wilmington', **extra,
+        )
+
+    def test_missing_rows_come_back_with_their_ids_and_timestamps(self):
+        kept = self.make('Kept', 3)
+        deleted = self.make('Deleted', 5, status=Appointment.STATUS_CONFIRMED, notes='VIP')
+        deleted_id, deleted_created = deleted.id, deleted.created_at
+        with tempfile.TemporaryDirectory() as tmp:
+            call_command('backup_db', dest=tmp, keep=1, stdout=StringIO())
+            backup = next(Path(tmp).glob('db-*.sqlite3'))
+            deleted.delete()
+            kept.name = 'Kept And Edited'
+            kept.save()
+
+            out = StringIO()
+            call_command('restore_appointments', str(backup), dry_run=True, stdout=out)
+            self.assertIn('1 missing from live', out.getvalue())
+            self.assertIn(f'id {deleted_id}: 2026-11-05 10:00 Wilmington [confirmed]', out.getvalue())
+            self.assertNotIn('Deleted', out.getvalue())  # no patient names in the output
+            self.assertEqual(Appointment.objects.count(), 1)
+
+            call_command('restore_appointments', str(backup), stdout=StringIO())
+
+        restored = Appointment.objects.get(pk=deleted_id)
+        self.assertEqual((restored.name, restored.status, restored.notes), ('Deleted', 'confirmed', 'VIP'))
+        self.assertEqual(restored.created_at, deleted_created)
+        kept.refresh_from_db()
+        self.assertEqual(kept.name, 'Kept And Edited')  # existing rows are left alone
+
+    def test_old_backup_without_new_columns_and_id_filter(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            old = Path(tmp) / 'db-old.sqlite3'
+            con = sqlite3.connect(str(old))
+            con.executescript('''
+                create table website_appointment (
+                    id integer primary key, name varchar(100), phone varchar(15), email varchar(254),
+                    date date, time time, message text);
+                insert into website_appointment values (41, 'Early Patient', '5550100', 'e@example.com', '2024-01-20', '10:30:00', 'knee');
+                insert into website_appointment values (42, 'Other Patient', '5550101', 'o@example.com', '2024-01-22', '09:00:00', '');
+            ''')
+            con.commit()
+            con.close()
+            out = StringIO()
+            call_command('restore_appointments', str(old), ids='41', stdout=out)
+
+        self.assertEqual(list(Appointment.objects.values_list('id', flat=True)), [41])
+        restored = Appointment.objects.get()
+        self.assertEqual((restored.service, restored.location, restored.status), ('Not specified', 'wilmington', 'pending'))
+        self.assertEqual(restored.time, time(10, 30))
+        self.assertIsNotNone(restored.created_at)

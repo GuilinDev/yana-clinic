@@ -49,6 +49,13 @@ class AppointmentAdmin(admin.ModelAdmin):
         ('Clinic', {'fields': ('notes', 'created_at')}),
     )
 
+    def get_actions(self, request):
+        # No bulk delete: one wrong tick plus "Delete selected" wiped real bookings once.
+        # Mark appointments as cancelled instead; a single record can still be deleted from its page.
+        actions = super().get_actions(request)
+        actions.pop('delete_selected', None)
+        return actions
+
     @admin.display(description='Message')
     def short_message(self, obj):
         text = obj.message.strip()
